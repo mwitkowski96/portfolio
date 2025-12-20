@@ -63,14 +63,16 @@ function displayNav() {
         <img src="./img/smallITP.png" class="logo-mobile" alt="logo firmy ITPortfolio">
         <img src="./img/bigITP.png" class="logo-desktop" alt="logo firmy ITPortfolio">
     </div>
-    <button class="hamburger ${menuIsOpen} ? "open" : ""}"onclick="toggleMenu()">
+    <button class="hamburger ${
+      menuIsOpen ? "open" : ""
+    }" onclick="toggleMenu()">
         <div class="bar"></div>
         <div class="bar"></div>
         <div class="bar"></div>
     </button>
 
-    <div class="nav-list" ${menuIsOpen ? "show" : ""}">
-    ${navItems}
+    <div class="nav-list ${menuIsOpen ? "show" : ""}">
+        ${navItems}
     </div>
   `;
 }

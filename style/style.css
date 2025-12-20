@@ -8,16 +8,51 @@
 
 :root {
   --main-color: #1f2041;
+  --white-color: #fff;
+  --gold-color: #d4af37;
+  --active-item-color: #adb6c4;
 }
 
 body {
   font-family: "League Gothic", sans-serif;
+  max-width: 1920px;
+  margin: 0 auto;
 }
 
 #header {
   background-color: var(--main-color);
   width: 100%;
   height: 100vh;
+}
+
+#nav {
+  position: relative;
+  background-color: var(--main-color);
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+}
+
+.hamburger {
+  display: block;
+  background: none;
+  border: none;
+}
+
+.hamburger .bar {
+  width: 2.344rem;
+  height: 0.188rem;
+  background-color: var(--white-color);
+  margin: 0.5rem;
+  border-radius: 8px;
+}
+
+.hamburger.open .bar {
+  background-color: var(--gold-color);
 }
 
 .logo-desktop {
@@ -29,18 +64,6 @@ body {
   height: 1.582rem;
 }
 
-.hamburger {
-  display: block;
-}
-
-#nav {
-  background-color: rgb(255, 2, 2);
-}
-
-.logo {
-  background-color: #ffffff00;
-}
-
 .nav-list {
   display: none;
   flex-direction: column;
@@ -50,4 +73,35 @@ body {
   background-color: none;
   padding: 20px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nav-list.show {
+  display: flex;
+}
+
+.nav-list button.active {
+  color: var(--active-item-color);
+}
+
+@media (min-width: 768px) {
+  .logo-mobile {
+    display: none;
+  }
+  .logo-desktop {
+    display: block;
+    height: 40px;
+  }
+
+  .hamburger {
+    display: none;
+  }
+
+  .nav-list {
+    display: flex;
+    flex-direction: row;
+    position: static;
+    padding: 0;
+    box-shadow: none;
+    width: auto;
+  }
 }
