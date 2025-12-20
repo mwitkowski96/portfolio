@@ -1,5 +1,6 @@
 // Podstawowe ustawienia aplikacji
 let appData = {
+  navItems: ["Home", "Projects", "About", "Contact", "Messages"],
   header: {
     name: "Marek Witkowski",
     title: "web-designer",
@@ -33,3 +34,45 @@ let appData = {
   ],
   messages: [],
 };
+
+//Sterowanie aplikacja
+
+//Domyslne ustawienia aplikacji
+let currentPage = "Home";
+let menuIsOpen = false;
+let carouselIndex = 0;
+
+//Wyswietlenie sekcji
+
+function displayNav() {
+  const nav = document.getElementById("nav");
+
+  const navItems = appData.navItems
+    .map(
+      (navItem) =>
+        `<button class="${
+          currentPage === navItem ? "active" : ""
+        }" onclick="setPage('${navItem}')"> ${navItem}</button>`
+    )
+    .join("");
+
+  console.log("Elo");
+
+  nav.innerHTML = `
+    <div class="logo">
+        <img src="./img/smallITP.png" class="logo-mobile" alt="logo firmy ITPortfolio">
+        <img src="./img/bigITP.png" class="logo-desktop" alt="logo firmy ITPortfolio">
+    </div>
+    <button class="hamburger ${menuIsOpen} ? "open" : ""}"onclick="toggleMenu()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </button>
+
+    <div class="nav-list" ${menuIsOpen ? "show" : ""}">
+    ${navItems}
+    </div>
+  `;
+}
+
+displayNav();
