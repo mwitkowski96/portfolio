@@ -77,4 +77,19 @@ function displayNav() {
   `;
 }
 
+function toggleMenu() {
+  menuIsOpen = !menuIsOpen;
+  displayNav();
+}
+
+function setPage(page) {
+  currentPage = page;
+  menuIsOpen = false;
+  display();
+}
+
+function display() {
+  displayNav();
+}
+
 displayNav();

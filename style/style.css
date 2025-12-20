@@ -34,7 +34,7 @@ body {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 1rem;
+  padding: 0.625rem;
 }
 
 .hamburger {
@@ -68,15 +68,26 @@ body {
   display: none;
   flex-direction: column;
   position: absolute;
-  top: 60px;
+  top: 3.75rem;
+  left: 0;
   width: 100%;
-  background-color: none;
-  padding: 20px;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid white;
+  border-bottom: 1px solid white;
+  gap: 1.875rem;
+  padding: 1.875rem 0 1.875rem 2.313rem;
 }
 
 .nav-list.show {
   display: flex;
+}
+
+.nav-list button {
+  background: none;
+  border: none;
+  color: var(--white-color);
+  font-size: 1rem;
+  width: max-content;
+  text-transform: uppercase;
 }
 
 .nav-list button.active {
