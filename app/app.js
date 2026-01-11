@@ -90,38 +90,45 @@ function displayAbout() {
   const main = document.getElementById("main");
 
   const skillsIcons = appData.about.skills
-    .map(
-      /* html */
-      (skill) => `
-    <div class="skill-item">
-        <img src="${skill.img}" alt="${skill.name}" title="${skill.name}">
-        <span>${skill.name}</span>
-    </div>
-    `
-    )
+    .map((skill) => {
+      let yearsOfExperience = "";
+      for (let i = 0; i < 5; i++) {
+        const yearsOfExperienceFill =
+          i < skill.yearsOfExperience ? "filled" : "empty";
+        yearsOfExperience += /* html */ `<span class="${yearsOfExperienceFill}"></span>`;
+      }
+
+      return /* html */ `
+      <li class="skill-item">
+        <img src="${skill.img}" alt="${skill.name}" class="skill-img">
+        <div class="skill-info">
+          <div class="skill-row">
+            <span class="skill-name">${skill.name}</span>
+            <div class="dots-container">${yearsOfExperience}</div>
+            <span class="years-text">${skill.yearsOfExperience} years</span>
+          </div>
+          
+        </div>
+      </li>
+      `;
+    })
     .join("");
 
-  main.innerHTML = /* html */ `
-  <section class="about container">
-    <div class="about-grid">
-        <div class="about-image">
-            <img src="${appData.about.photo}" alt="${header.name}">
-        </div>
-        <div class="about-info">
-            <h2 class="about-info-heading">About me</h2>
-            <p class="about-info-description">
-                ${appData.about.about}
-            </p>
-            <div class="skills">
-            <h2>My skills<h2>
-            <ul class="skills-list">
+  main.innerHTML += /* html */ `
+  <section id="about" class="about-section container">
+      <div class="about-container">
+          <img src="${appData.about.photo}" class="about-photo">
+          <h2 class="about-heading heading">About me</h2>
+          <p class="about-desc">${appData.about.about}</p>
+      </div>
+      <div class="skills">
+          <h2 class="skills-heading heading">My Skills</h2>
+          <ul class="skills-list">
             ${skillsIcons}
-            </ul>
-            </div>
-        </div>
-    </div>
-  </section>
-    `;
+          </ul>
+      </div>
+    </section>
+  `;
 }
 
 function toggleMenu() {
