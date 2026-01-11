@@ -107,11 +107,17 @@ function displayAbout() {
         <div class="about-image">
             <img src="${appData.about.photo}" alt="${header.name}">
         </div>
-        <div clas="about-info">
-        <h2>O mnie</h2>
-        <p>${appData.about.about}</p>
-        <div class="skills-list">
-        ${skillsIcons}
+        <div class="about-info">
+            <h2 class="about-info-heading">About me</h2>
+            <p class="about-info-description">
+                ${appData.about.about}
+            </p>
+            <div class="skills">
+            <h2>My skills<h2>
+            <ul class="skills-list">
+            ${skillsIcons}
+            </ul>
+            </div>
         </div>
     </div>
   </section>

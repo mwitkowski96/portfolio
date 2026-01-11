@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=League+Gothic&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=League+Gothic&family=League+Spartan:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=League+Gothic&family=League+Spartan:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 * {
   padding: 0;
@@ -136,6 +137,31 @@ body {
 .about-image img {
   width: 100%;
   border-radius: 1rem;
+}
+
+.about-info {
+  margin-top: 4.063rem;
+}
+
+.about-info-heading {
+  font-family: "League Spartan", sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  margin-bottom: 1.063rem;
+}
+
+.about-info-description {
+  font-family: "Roboto";
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+.skills {
+  margin-top: 2.5rem;
+}
+
+.skills-list {
+  background-color: rgba(255, 0, 0, 0.349);
 }
 
 @media (min-width: 768px) {
