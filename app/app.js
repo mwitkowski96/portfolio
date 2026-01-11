@@ -1,4 +1,4 @@
-// Podstawowe ustawienia aplikacji
+// Dane aplikacji webowej.
 let appData = {
   navItems: ["Home", "Projects", "About", "Contact", "Messages"],
   header: {
@@ -36,7 +36,10 @@ let appData = {
   messages: [],
 };
 
-//Sterowanie aplikacja
+// Wyniesienie elementow DOM
+const navElement = document.getElementById("nav");
+const headerElement = document.getElementById("header");
+const mainElement = document.getElementById("main");
 
 //Domyslne ustawienia aplikacji
 let currentPage = "Home";
@@ -46,8 +49,6 @@ let carouselIndex = 0;
 //Wyswietlenie sekcji
 
 function displayNav() {
-  const nav = document.getElementById("nav");
-
   const navItems = appData.navItems /* html */
     .map(
       (navItem) =>
@@ -77,8 +78,6 @@ function displayNav() {
 }
 
 function displayHeader() {
-  const header = document.getElementById("header");
-
   header.innerHTML = /* html */ `
   <div class="header container">
     <h1 class="header-heading">${appData.header.name}</h1>
@@ -88,8 +87,6 @@ function displayHeader() {
 }
 
 function displayAbout() {
-  const main = document.getElementById("main");
-
   const skillsIcons = appData.about.skills
     .map((skill) => {
       let yearsOfExperience = "";
@@ -131,6 +128,38 @@ function displayAbout() {
   `;
 }
 
+function displayProjects() {
+  const myProjects = appData.projects
+    .map((project) => {
+      const techStack = project.tech
+        .map(
+          (t) => /* html */ `
+        <li>${t}</li>`
+        )
+        .join("");
+
+      return /* html */ `
+      <div class="project-card">
+        <div class="project-details">
+            <h3 class="project-title">${project.title}</h3>
+            <ul class="project-card-tech-list">
+                ${techStack}
+            </ul>
+        </div>
+    </div>
+      `;
+    })
+    .join("");
+
+  mainElement.innerHTML += /* html */ `
+    <section id="projects" class="projects-section container">
+    <ul class="projects-list">
+    ${myProjects}
+    </ul>
+    </section>
+    `;
+}
+
 function toggleMenu() {
   menuIsOpen = !menuIsOpen;
   displayNav();
@@ -150,6 +179,7 @@ function display() {
   main.innerHTML = "";
 
   displayAbout();
+  displayProjects();
 }
 
 display();
