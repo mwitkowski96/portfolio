@@ -3,7 +3,7 @@ let appData = {
   navItems: ["Home", "Projects", "About", "Contact", "Messages"],
   header: {
     name: "Marek Witkowski",
-    title: "web-designer",
+    title: "web - designer",
   },
   about: {
     photo: "./img/IMG_0826.jpg",
@@ -47,7 +47,7 @@ let carouselIndex = 0;
 function displayNav() {
   const nav = document.getElementById("nav");
 
-  const navItems = appData.navItems
+  const navItems = appData.navItems /* html */
     .map(
       (navItem) =>
         `<button class="${
@@ -56,9 +56,7 @@ function displayNav() {
     )
     .join("");
 
-  console.log("Elo");
-
-  nav.innerHTML = `
+  nav.innerHTML = /* html */ `
     <div class="logo">
         <img src="./img/smallITP.png" class="logo-mobile" alt="logo firmy ITPortfolio">
         <img src="./img/bigITP.png" class="logo-desktop" alt="logo firmy ITPortfolio">
@@ -77,6 +75,49 @@ function displayNav() {
   `;
 }
 
+function displayHeader() {
+  const header = document.getElementById("header");
+
+  header.innerHTML = /* html */ `
+  <div class="header container">
+    <h1 class="header-heading">${appData.header.name}</h1>
+    <p class="header-paragraph">${appData.header.title}</p>
+  </div>
+  `;
+}
+
+function displayAbout() {
+  const main = document.getElementById("main");
+
+  const skillsIcons = appData.about.skills
+    .map(
+      /* html */
+      (skill) => `
+    <div class="skill-item">
+        <img src="${skill.img}" alt="${skill.name}" title="${skill.name}">
+        <span>${skill.name}</span>
+    </div>
+    `
+    )
+    .join("");
+
+  main.innerHTML = /* html */ `
+  <section class="about container">
+    <div class="about-grid">
+        <div class="about-image">
+            <img src="${appData.about.photo}" alt="${header.name}">
+        </div>
+        <div clas="about-info">
+        <h2>O mnie</h2>
+        <p>${appData.about.about}</p>
+        <div class="skills-list">
+        ${skillsIcons}
+        </div>
+    </div>
+  </section>
+    `;
+}
+
 function toggleMenu() {
   menuIsOpen = !menuIsOpen;
   displayNav();
@@ -85,11 +126,17 @@ function toggleMenu() {
 function setPage(page) {
   currentPage = page;
   menuIsOpen = false;
-  display();
+  display(); // Nie przypominam sobie, zebysmy poruszali to na kursie.
 }
 
 function display() {
   displayNav();
+  displayHeader();
+
+  const main = document.getElementById("main");
+  main.innerHTML = "";
+
+  displayAbout();
 }
 
-displayNav();
+display();

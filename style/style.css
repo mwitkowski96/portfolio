@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=League+Gothic&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=League+Gothic&family=League+Spartan:wght@100..900&display=swap");
 
 * {
   padding: 0;
@@ -17,12 +18,12 @@ body {
   font-family: "League Gothic", sans-serif;
   max-width: 1920px;
   margin: 0 auto;
+  background-color: var(--main-color);
 }
 
 #header {
-  background-color: var(--main-color);
   width: 100%;
-  height: 100vh;
+  height: 500px;
 }
 
 #nav {
@@ -35,6 +36,11 @@ body {
   align-items: center;
   width: 100%;
   padding: 0.625rem;
+  z-index: 2;
+}
+
+.container {
+  padding: 0.625rem 1rem;
 }
 
 .hamburger {
@@ -75,6 +81,7 @@ body {
   border-bottom: 1px solid white;
   gap: 1.875rem;
   padding: 1.875rem 0 1.875rem 2.313rem;
+  background-color: var(--main-color);
 }
 
 .nav-list.show {
@@ -92,6 +99,43 @@ body {
 
 .nav-list button.active {
   color: var(--active-item-color);
+}
+
+.header {
+  margin-top: 3.563rem;
+  color: var(--white-color);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.header-heading {
+  font-weight: 400;
+  font-size: 6rem;
+}
+
+.header-paragraph {
+  font-family: "League Spartan", sans-serif;
+  font-size: 2rem;
+  margin-top: 2rem;
+  letter-spacing: 0.8rem;
+  text-transform: uppercase;
+}
+
+#main {
+  background-color: var(--white-color);
+}
+
+.about-image {
+  margin-top: 5.25rem;
+}
+
+.about-image img {
+  width: 100%;
+  border-radius: 1rem;
 }
 
 @media (min-width: 768px) {
