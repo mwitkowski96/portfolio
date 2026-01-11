@@ -14,9 +14,10 @@ let appData = {
       { name: "CSS", yearsOfExperience: 5, img: "./IMG/symbol.png" },
       { name: "JS", yearsOfExperience: 5, img: "./IMG/Javascript.png" },
       { name: "Git", yearsOfExperience: 1, img: "./IMG/Shape.png" },
-      { name: "Figma", yearsOfExperience: 1, img: "./IMG/Figma.png" },
-      { name: "Chrome", yearsOfExperience: 5, img: "./IMG/GoogleChrome.png" },
-      { name: "VSCode", yearsOfExperience: 5, img: "./IMG/Group.png" },
+      { name: "Figma", yearsOfExperience: 1, img: "./img/Figma.png" },
+      { name: "Chrome", yearsOfExperience: 5, img: "./img/GoogleChrome.png" },
+      { name: "VSCode", yearsOfExperience: 5, img: "./img/Group.png" },
+      { name: "GitHub", yearsOfExperience: 1, img: "./img/GitHub.png" },
     ],
   },
   projects: [
@@ -105,9 +106,8 @@ function displayAbout() {
           <div class="skill-row">
             <span class="skill-name">${skill.name}</span>
             <div class="dots-container">${yearsOfExperience}</div>
-            <span class="years-text">${skill.yearsOfExperience} years</span>
+                <span class="experience-years">${skill.yearsOfExperience} years</span>
           </div>
-          
         </div>
       </li>
       `;
