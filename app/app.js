@@ -32,6 +32,11 @@ let appData = {
       title: "Portfolio app",
       tech: ["HTML", "CSS", "JavaScript", "Figma", "Github"],
     },
+    {
+      id: 4,
+      title: "Portfolio app",
+      tech: ["HTML", "CSS", "JavaScript", "Figma", "Github"],
+    },
   ],
   messages: [],
 };
@@ -129,7 +134,16 @@ function displayAbout() {
 }
 
 function displayProjects() {
-  const myProjects = appData.projects
+  const projectsCount = appData.projects.length;
+
+  let displayedProjects = [];
+
+  for (let i = 0; i < 3; i++) {
+    let index = (carouselIndex + i) % projectsCount;
+    displayedProjects.push(appData.projects[index]);
+  }
+
+  const myProjects = displayedProjects
     .map((project) => {
       const techStack = project.tech
         .map(
@@ -151,13 +165,40 @@ function displayProjects() {
     })
     .join("");
 
+  const controlButtons =
+    projectsCount > 3
+      ? /* html */ `
+    <div class="carousel-controls">
+        <button class="arrow prev" id="prevBtn">
+        <img src="./img/strzalka.png" class="arrow-icon" alt="ikonaStrzalkiDoPrzodu">
+        </button>
+        <button class="arrow next" id="nextBtn">
+        <img src="./img/strzalka.png" class="arrow-icon arrow-prev" alt="ikonaStrzalkiDoTylu"></button>
+    </div>`
+      : "";
+
   mainElement.innerHTML += /* html */ `
     <section id="projects" class="projects-section container">
-    <ul class="projects-list">
-    ${myProjects}
-    </ul>
-    </section>
-    `;
+        <div class="carousel-box">
+            <ul class="projects-list">${myProjects}</ul>
+            ${controlButtons}
+        </div>
+    </section>`;
+
+  if (projectsCount > 3) {
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    if (prevBtn && nextBtn) {
+      prevBtn.addEventListener("click", () => moveCarousel(-1));
+      nextBtn.addEventListener("click", () => moveCarousel(1));
+    }
+  }
+}
+function moveCarousel(direction) {
+  const projectsCount = appData.projects.length;
+  carouselIndex = (carouselIndex + direction + projectsCount) % projectsCount;
+  display();
 }
 
 function toggleMenu() {
@@ -174,10 +215,8 @@ function setPage(page) {
 function display() {
   displayNav();
   displayHeader();
-
   const main = document.getElementById("main");
   main.innerHTML = "";
-
   displayAbout();
   displayProjects();
 }

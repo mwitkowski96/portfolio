@@ -276,8 +276,29 @@ body {
   flex-direction: column;
   gap: 2rem;
 }
-/* Projekty END*/
 
+.carousel-controls {
+  display: flex;
+  gap: 3.438rem;
+  margin: 5.25rem 0;
+  justify-content: center;
+}
+
+.arrow {
+  width: 3.75rem;
+  height: 3.75rem;
+  background-color: var(--active-item-color);
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.arrow-prev {
+  transform: rotate(180deg);
+}
+
+/* Projekty END*/
 @media (min-width: 768px) {
   .logo-mobile {
     display: none;
