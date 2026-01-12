@@ -38,6 +38,10 @@ let appData = {
       tech: ["HTML", "CSS", "JavaScript", "Figma", "Github"],
     },
   ],
+  footer: {
+    email: "marek.witkowski96@icloud.com",
+    phone: "+48 123 456 789",
+  },
   messages: [],
 };
 
@@ -45,6 +49,7 @@ let appData = {
 const navElement = document.getElementById("nav");
 const headerElement = document.getElementById("header");
 const mainElement = document.getElementById("main");
+const footerElement = document.getElementById("footer");
 
 //Domyslne ustawienia aplikacji
 let currentPage = "Home";
@@ -52,7 +57,6 @@ let menuIsOpen = false;
 let carouselIndex = 0;
 
 //Wyswietlenie sekcji
-
 function displayNav() {
   const navItems = appData.navItems /* html */
     .map(
@@ -63,7 +67,7 @@ function displayNav() {
     )
     .join("");
 
-  nav.innerHTML = /* html */ `
+  navElement.innerHTML = /* html */ `
     <div class="logo">
         <img src="./img/smallITP.png" class="logo-mobile" alt="logo firmy ITPortfolio">
         <img src="./img/bigITP.png" class="logo-desktop" alt="logo firmy ITPortfolio">
@@ -81,16 +85,14 @@ function displayNav() {
     </div>
   `;
 }
-
 function displayHeader() {
-  header.innerHTML = /* html */ `
+  headerElement.innerHTML = /* html */ `
   <div class="header container">
     <h1 class="header-heading">${appData.header.name}</h1>
     <p class="header-paragraph">${appData.header.title}</p>
   </div>
   `;
 }
-
 function displayAbout() {
   const skillsIcons = appData.about.skills
     .map((skill) => {
@@ -132,12 +134,9 @@ function displayAbout() {
     </section>
   `;
 }
-
 function displayProjects() {
   const projectsCount = appData.projects.length;
-
   let displayedProjects = [];
-
   for (let i = 0; i < 3; i++) {
     let index = (carouselIndex + i) % projectsCount;
     displayedProjects.push(appData.projects[index]);
@@ -195,30 +194,40 @@ function displayProjects() {
     }
   }
 }
+function displayFooter() {
+  footerElement.innerHTML = /* html */ `
+    <div class="footer-container">
+        <div class="footer-contact">
+            <a href="mailto:${appData.footer.email}">${appData.footer.email}</a>
+            <a href="tel:${appData.footer.phone}">${appData.footer.phone}</a>
+        </div>
+        <div class="footer-logo">
+            <span class="gold">ITP</span><span class="grey">ortfolio</span> &copy; 2026
+        </div>
+    </div>`;
+}
 function moveCarousel(direction) {
   const projectsCount = appData.projects.length;
   carouselIndex = (carouselIndex + direction + projectsCount) % projectsCount;
   display();
 }
-
 function toggleMenu() {
   menuIsOpen = !menuIsOpen;
   displayNav();
 }
-
 function setPage(page) {
   currentPage = page;
   menuIsOpen = false;
   display(); // Nie przypominam sobie, zebysmy poruszali to na kursie.
 }
-
 function display() {
   displayNav();
   displayHeader();
-  const main = document.getElementById("main");
-  main.innerHTML = "";
-  displayAbout();
-  displayProjects();
+  mainElement.innerHTML = "";
+  if (currentPage === "Home") {
+    displayAbout();
+    displayProjects();
+  }
+  displayFooter();
 }
-
 display();
