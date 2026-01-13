@@ -31,21 +31,24 @@
 }
 
 body {
-  font-family: "League Gothic", sans-serif;
-  max-width: 1920px;
   margin: 0 auto;
-  background-color: var(--main-color);
+  font-family: "League Gothic", sans-serif;
 }
 
 #header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  height: 500px;
+  min-height: 500px;
+  margin: 0 auto;
+  background-color: var(--main-color);
 }
 
 #nav {
   position: relative;
   background-color: var(--main-color);
-  top: 2.313rem;
+  top: 0;
   left: 0;
   display: flex;
   justify-content: space-between;
@@ -55,6 +58,10 @@ body {
   z-index: 2;
 }
 
+#main {
+  margin: 0 auto;
+}
+
 #footer {
   background-color: var(--main-color);
   color: var(--white-color);
@@ -62,6 +69,8 @@ body {
   padding: 3.75rem 1.125rem;
   font-weight: 700;
   font-size: 1rem;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .container {
@@ -127,7 +136,6 @@ body {
 }
 
 .header {
-  margin-top: 3.563rem;
   color: var(--white-color);
   text-align: center;
   display: flex;
@@ -174,7 +182,7 @@ body {
 
 .about-photo {
   width: 100%;
-  height: 311px;
+  max-height: 311px;
   border-radius: 1rem;
   object-fit: cover;
   margin-bottom: 4rem;
@@ -618,6 +626,8 @@ body {
 
   .footer-container {
     width: 100%;
+    margin: 0 auto;
+    max-width: 1260px;
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-end;
@@ -670,13 +680,9 @@ body {
 }
 
 @media (min-width: 1024px) {
-  .projects-section {
-    max-width: 1162px;
-    padding: 0;
-  }
-
   .projects-list {
     flex-direction: row;
+    flex-wrap: wrap;
   }
 
   .arrow-prev {
