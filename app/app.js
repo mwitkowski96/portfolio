@@ -94,7 +94,7 @@ function displayHeader() {
   `;
 }
 function displayAbout() {
-  const skillsIcons = appData.about.skills
+  const skills = appData.about.skills
     .map((skill) => {
       let yearsOfExperience = "";
       for (let i = 0; i < 5; i++) {
@@ -104,7 +104,7 @@ function displayAbout() {
       }
 
       return /* html */ `
-      <li class="skill-item">
+      <div class="skill-item">
         <img src="${skill.img}" alt="${skill.name}" class="skill-img">
         <div class="skill-info">
           <div class="skill-row">
@@ -113,23 +113,23 @@ function displayAbout() {
                 <span class="experience-years">${skill.yearsOfExperience} years</span>
           </div>
         </div>
-      </li>
+      </div>
       `;
     })
     .join("");
 
   main.innerHTML += /* html */ `
   <section id="about" class="about-section container">
-      <div class="about-container">
+      <div class="about-container wrapper">
           <img src="${appData.about.photo}" class="about-photo">
           <h2 class="about-heading heading">About me</h2>
           <p class="about-desc">${appData.about.about}</p>
       </div>
-      <div class="skills">
+      <div class="skills-container wrapper">
           <h2 class="skills-heading heading">My Skills</h2>
-          <ul class="skills-list">
-            ${skillsIcons}
-          </ul>
+          <div class="skills-list">
+            ${skills}
+          </div>
       </div>
     </section>
   `;
@@ -169,7 +169,7 @@ function displayProjects() {
       ? /* html */ `
     <div class="carousel-controls">
         <button class="arrow prev" id="prevBtn">
-        <img src="./img/strzalka.png" class="arrow-icon" alt="ikonaStrzalkiDoPrzodu">
+        <img src="./img/strzalka.png" class="arrow-icon arrow-next" alt="ikonaStrzalkiDoPrzodu">
         </button>
         <button class="arrow next" id="nextBtn">
         <img src="./img/strzalka.png" class="arrow-icon arrow-prev" alt="ikonaStrzalkiDoTylu"></button>
@@ -177,7 +177,7 @@ function displayProjects() {
       : "";
 
   mainElement.innerHTML += /* html */ `
-    <section id="projects" class="projects-section container">
+    <section id="projects" class="projects-section">
         <div class="carousel-box">
             <ul class="projects-list">${myProjects}</ul>
             ${controlButtons}

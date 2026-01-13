@@ -30,13 +30,13 @@ body {
 #nav {
   position: relative;
   background-color: var(--main-color);
-  top: 0;
+  top: 2.313rem;
   left: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 0.625rem;
+  padding: 1rem;
   z-index: 2;
 }
 
@@ -78,8 +78,8 @@ body {
   top: 3.75rem;
   left: 0;
   width: 100%;
-  border-top: 1px solid white;
-  border-bottom: 1px solid white;
+  border-top: 1px solid var(--white-color);
+  border-bottom: 1px solid var(--white-color);
   gap: 1.875rem;
   padding: 1.875rem 0 1.875rem 2.313rem;
   background-color: var(--main-color);
@@ -133,16 +133,24 @@ body {
 /* O mnie START*/
 
 .about-section {
+  margin: 0 auto;
+
   background-color: var(--white-color);
+  max-width: 958px;
 }
 
 .about-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
   margin-top: 4.063rem;
   margin-bottom: 4.063rem;
 }
 
 .about-photo {
   width: 100%;
+  height: 311px;
   border-radius: 1rem;
   object-fit: cover;
   margin-bottom: 4rem;
@@ -156,6 +164,7 @@ body {
 
 .about-heading {
   margin-bottom: 1.063rem;
+  width: 100%;
 }
 
 .about-desc {
@@ -164,17 +173,27 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
+.skills-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  justify-content: center;
+}
+
 .skills-heading {
+  width: 100%;
   margin-bottom: 2rem;
 }
 
 .skills-list {
-  list-style: none;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   gap: 2.25rem;
+  list-style: none;
+  width: 100%;
 }
 
 .skill-item {
@@ -229,19 +248,33 @@ body {
 /* Projekty START*/
 
 .projects-section {
+  margin: 0 auto;
   margin-top: 5.563rem;
+  padding: 0.625rem 1rem;
   font-family: "Roboto", sans-serif;
   color: var(--white-color);
+}
+
+.carousel-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .projects-list {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 30px;
+  width: 100%;
 }
 
 .project-card {
-  max-width: 300px;
+  width: 100%;
+  max-width: 360px;
   height: 460px;
   border-radius: 1rem;
   background-image: url("/img/projectbgi.jpg");
@@ -381,5 +414,37 @@ body {
     padding: 0;
     box-shadow: none;
     width: auto;
+    border-top: none;
+    border-bottom: none;
+  }
+
+  .about-photo {
+    width: 100%;
+    height: 755px;
+  }
+
+  .skills-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 3rem 1.65rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .projects-section {
+    max-width: 1162px;
+    padding: 0;
+  }
+
+  .projects-list {
+    flex-direction: row;
+  }
+
+  .arrow-prev {
+    transform: rotate(90deg);
+  }
+  .arrow-next {
+    transform: rotate(-90deg);
   }
 }
