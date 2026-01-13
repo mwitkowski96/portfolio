@@ -69,6 +69,24 @@ function generateNavItems() {
     .join("");
 }
 
+//Funkcja generujaca projekty
+function generateProjectCard(project, showDelete = false) {
+  const techStack = project.tech.map((t) => `<li>${t}</li>`).join("");
+  const deleteBtn = showDelete
+    ? `<button class="delete-btn" data-id="${project.id}">
+         <img src="./img/delete.png" alt="delete">
+       </button>`
+    : "";
+
+  return /* html */ `
+    <div class="project-card">
+      ${deleteBtn}
+      <div class="project-details">
+          <h3 class="project-title">${project.title}</h3>
+          <ul class="project-card-tech-list">${techStack}</ul>
+      </div>
+    </div>`;
+}
 // Event listenery na buttony nawigacji
 function attachNavListeners() {
   const buttons = document.querySelectorAll(".nav-btn");
@@ -86,7 +104,6 @@ function attachNavListeners() {
     hamburger.addEventListener("click", toggleMenu);
   }
 }
-
 //Wyswietlenie sekcji
 function displayNav() {
   navElement.innerHTML = /* html */ `
@@ -106,25 +123,48 @@ function displayNav() {
   `;
   attachNavListeners();
 }
-
 function displayHeader() {
-  headerElement.innerHTML = /* html */ `
-  <div class="header container">
-    <h1 class="header-heading">${appData.header.name}</h1>
-    <p class="header-paragraph">${appData.header.title}</p>
-  </div>
-  `;
+  let headerContent = "";
+
+  if (currentPage === "Home") {
+    headerContent = /*html*/ `
+      <div class="header container">
+        <h1 class="header-heading">${appData.header.name}</h1>
+        <p class="header-subtitle">${appData.header.title}</p>
+      </div>`;
+  } else if (currentPage === "Projects") {
+    headerContent = /*html*/ `
+      <div class="header container">
+        <h1 class="header-heading projects-title">MY PROJECTS</h1>
+        <span class="header-subtitle">Made with love</span>
+      </div>`;
+  } else {
+    headerContent = /*html*/ `
+      <div class="header container">
+        <h1 class="header-heading projects-title">${currentPage.toUpperCase()}</h1>
+      </div>`;
+  }
+
+  headerElement.innerHTML = headerContent;
 }
-function displayAbout() {
+function toggleMenu() {
+  menuIsOpen = !menuIsOpen;
+  displayNav();
+}
+function setPage(page) {
+  currentPage = page;
+  menuIsOpen = false;
+  carouselIndex = 0;
+  display(); // Nie przypominam sobie, zebysmy poruszali to na kursie.
+}
+function getAboutHTML() {
   const skills = appData.about.skills
     .map((skill) => {
       let yearsOfExperience = "";
       for (let i = 0; i < 5; i++) {
-        const yearsOfExperienceFill =
-          i < skill.yearsOfExperience ? "filled" : "empty";
-        yearsOfExperience += /* html */ `<span class="${yearsOfExperienceFill}"></span>`;
+        const fill = i < skill.yearsOfExperience ? "filled" : "empty";
+        yearsOfExperience += `<span class="${fill}"></span>`;
       }
-
       return /* html */ `
       <div class="skill-item">
         <img src="${skill.img}" alt="${skill.name}" class="skill-img">
@@ -132,15 +172,14 @@ function displayAbout() {
           <div class="skill-row">
             <span class="skill-name">${skill.name}</span>
             <div class="dots-container">${yearsOfExperience}</div>
-                <span class="experience-years">${skill.yearsOfExperience} years</span>
+            <span class="experience-years">${skill.yearsOfExperience} years</span>
           </div>
         </div>
-      </div>
-      `;
+      </div>`;
     })
     .join("");
 
-  main.innerHTML += /* html */ `
+  return /* html */ `
   <section id="about" class="about-section container">
       <div class="about-container wrapper">
           <img src="${appData.about.photo}" class="about-photo">
@@ -149,41 +188,30 @@ function displayAbout() {
       </div>
       <div class="skills-container wrapper">
           <h2 class="skills-heading heading">My Skills</h2>
-          <div class="skills-list">
-            ${skills}
-          </div>
+          <div class="skills-list">${skills}</div>
       </div>
     </section>
   `;
 }
-function displayProjects() {
+function getProjectsCarouselHTML() {
   const projectsCount = appData.projects.length;
+  if (projectsCount === 0) {
+    return /* html */ `
+      <section class="projects-section container">
+        <p class="empty-msg">No projects to show.</p>
+      </section>`;
+  }
+
   let displayedProjects = [];
-  for (let i = 0; i < 3; i++) {
+  const cardsToShow = Math.min(3, projectsCount);
+
+  for (let i = 0; i < cardsToShow; i++) {
     let index = (carouselIndex + i) % projectsCount;
     displayedProjects.push(appData.projects[index]);
   }
 
-  const myProjects = displayedProjects
-    .map((project) => {
-      const techStack = project.tech
-        .map(
-          (t) => /* html */ `
-        <li>${t}</li>`
-        )
-        .join("");
-
-      return /* html */ `
-      <div class="project-card">
-        <div class="project-details">
-            <h3 class="project-title">${project.title}</h3>
-            <ul class="project-card-tech-list">
-                ${techStack}
-            </ul>
-        </div>
-    </div>
-      `;
-    })
+  const projectsHTML = displayedProjects
+    .map((project) => generateProjectCard(project, false))
     .join("");
 
   const controlButtons =
@@ -191,30 +219,21 @@ function displayProjects() {
       ? /* html */ `
     <div class="carousel-controls">
         <button class="arrow prev" id="prevBtn">
-        <img src="./img/strzalka.png" class="arrow-icon arrow-prev" alt="ikonaStrzalkiDoPrzodu">
+           <img src="./img/strzalka.png" class="arrow-icon arrow-prev" alt="poprzedni">
         </button>
         <button class="arrow next" id="nextBtn">
-        <img src="./img/strzalka.png" class="arrow-icon arrow-next" alt="ikonaStrzalkiDoTylu"></button>
+           <img src="./img/strzalka.png" class="arrow-icon arrow-next" alt="następny">
+        </button>
     </div>`
       : "";
 
-  mainElement.innerHTML += /* html */ `
+  return /* html */ `
     <section id="projects" class="projects-section">
         <div class="carousel-box">
-            <ul class="projects-list">${myProjects}</ul>
+            <div class="projects-list">${projectsHTML}</div>
             ${controlButtons}
         </div>
     </section>`;
-
-  if (projectsCount > 3) {
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-
-    if (prevBtn && nextBtn) {
-      prevBtn.addEventListener("click", () => moveCarousel(-1));
-      nextBtn.addEventListener("click", () => moveCarousel(1));
-    }
-  }
 }
 function displayFooter() {
   footerElement.innerHTML = /* html */ `
@@ -236,30 +255,158 @@ function displayFooter() {
         </div>
     </div>`;
 }
-
 function moveCarousel(direction) {
   const projectsCount = appData.projects.length;
   carouselIndex = (carouselIndex + direction + projectsCount) % projectsCount;
   display();
 }
-function toggleMenu() {
-  menuIsOpen = !menuIsOpen;
-  displayNav();
+function renderProjectsPage() {
+  const allProjectsHTML = appData.projects
+    .map((project) => generateProjectCard(project, true))
+    .join("");
+
+  mainElement.innerHTML = /* html */ `
+    <section class="projects-section container">
+      <div class="add-project-container">
+        <button id="addProjectBtn" class="add-project-btn">
+          <img src="./img/plus.png" alt="plus" class="add-icon">
+          <span>Add project</span>
+        </button>
+      </div>
+
+      <div class="projects-list">
+        ${
+          appData.projects.length > 0
+            ? allProjectsHTML
+            : "<p>No projects to display.</p>"
+        }
+      </div>
+    </section>
+  `;
+
+  document.getElementById("addProjectBtn").onclick = openAddProjectModal;
+
+  const deleteButtons = document.querySelectorAll(".delete-btn");
+  deleteButtons.forEach((btn) => {
+    btn.onclick = () => {
+      const projectId = Number(btn.dataset.id);
+      // POPRAWKA: Tylko deleteProject, bez dodatkowego display()
+      deleteProject(projectId);
+    };
+  });
 }
-function setPage(page) {
-  currentPage = page;
-  menuIsOpen = false;
-  carouselIndex = 0;
-  display(); // Nie przypominam sobie, zebysmy poruszali to na kursie.
+function deleteProject(id) {
+  appData.projects = appData.projects.filter((p) => p.id !== id);
+  display();
+}
+function openAddProjectModal() {
+  const modalHTML = /* html */ `
+    <div id="modalOverlay" class="modal-overlay">
+      <div class="modal-window">
+        <button id="closeModal" class="close-x">&times;</button>
+        
+        <form id="addProjectForm" class="modal-form">
+          <div class="form-row">
+            <label for="newTitle">Project title</label>
+            <div class="input-wrapper">
+                <input type="text" id="newTitle" placeholder="Project title">
+                <span id="titleError" class="error-msg"></span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="newTech">Technologies</label>
+            <div class="input-wrapper">
+                <input type="text" id="newTech" placeholder="html-css-javascript">
+                <span id="techError" class="error-msg"></span>
+            </div>
+          </div>
+
+          <button type="submit" class="modal-submit-btn">
+            <img src="./img/plus.png" alt="plus">
+            Add project
+          </button>
+        </form>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", modalHTML);
+  document.body.style.overflow = "hidden";
+
+  document.getElementById("closeModal").onclick = closeModal;
+  document.getElementById("addProjectForm").onsubmit = handleAddProject;
+}
+function handleAddProject(e) {
+  e.preventDefault();
+
+  const titleVal = document.getElementById("newTitle").value.trim();
+  const techVal = document.getElementById("newTech").value.trim();
+  const titleErr = document.getElementById("titleError");
+  const techErr = document.getElementById("techError");
+
+  let isValid = true;
+
+  if (titleVal.length < 3) {
+    titleErr.innerText = "The title must be at least 3 characters long.";
+    isValid = false;
+  } else if (titleVal.length > 30) {
+    titleErr.innerText = "The title must not exceed 30 characters.";
+    isValid = false;
+  } else {
+    titleErr.innerText = "";
+  }
+
+  if (techVal === "") {
+    techErr.innerText = "Please add some technologies.";
+    isValid = false;
+  } else {
+    techErr.innerText = "";
+  }
+
+  if (isValid) {
+    const newProject = {
+      id: Date.now(),
+      title: titleVal,
+      tech: techVal
+        .split(/[ ,-]+/)
+        .map((t) => t.trim())
+        .filter((t) => t !== ""),
+    };
+    appData.projects.push(newProject);
+    closeModal();
+    display();
+  }
+}
+function closeModal() {
+  const modal = document.getElementById("modalOverlay");
+  if (modal) modal.remove();
+  document.body.style.overflow = "auto";
 }
 function display() {
   displayNav();
   displayHeader();
+
+  // Czyścimy widok
   mainElement.innerHTML = "";
+
   if (currentPage === "Home") {
-    displayAbout();
-    displayProjects();
+    const aboutHTML = getAboutHTML();
+    const projectsHTML = getProjectsCarouselHTML();
+    mainElement.innerHTML = aboutHTML + projectsHTML;
+
+    if (appData.projects.length > 3) {
+      document
+        .getElementById("prevBtn")
+        .addEventListener("click", () => moveCarousel(-1));
+      document
+        .getElementById("nextBtn")
+        .addEventListener("click", () => moveCarousel(1));
+    }
+  } else if (currentPage === "Projects") {
+    renderProjectsPage();
   }
+
   displayFooter();
   attachNavListeners();
 }
