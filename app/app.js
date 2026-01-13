@@ -56,35 +56,57 @@ let currentPage = "Home";
 let menuIsOpen = false;
 let carouselIndex = 0;
 
-//Wyswietlenie sekcji
-function displayNav() {
-  const navItems = appData.navItems /* html */
+// Funkcj generujaca nawigacje
+function generateNavItems() {
+  return appData.navItems
     .map(
-      (navItem) =>
-        `<button class="${
-          currentPage === navItem ? "active" : ""
-        }" onclick="setPage('${navItem}')"> ${navItem}</button>`
+      (navItem) /*html*/ =>
+        `<button class="nav-btn ${currentPage === navItem ? "active" : ""}" 
+                 data-page="${navItem}"> 
+            ${navItem}
+        </button>`
     )
     .join("");
+}
 
+// Event listenery na buttony nawigacji
+function attachNavListeners() {
+  const buttons = document.querySelectorAll(".nav-btn");
+  buttons.forEach((button) => {
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      const page = button.getAttribute("data-page");
+      setPage(page);
+    });
+  });
+
+  // Obsługa menu hamburgerowego
+  const hamburger = document.querySelector(".hamburger");
+  if (hamburger) {
+    hamburger.addEventListener("click", toggleMenu);
+  }
+}
+
+//Wyswietlenie sekcji
+function displayNav() {
   navElement.innerHTML = /* html */ `
     <div class="logo">
-        <img src="./img/smallITP.png" class="logo-mobile" alt="logo firmy ITPortfolio">
-        <img src="./img/bigITP.png" class="logo-desktop" alt="logo firmy ITPortfolio">
+        <img src="./img/smallITP.png" class="logo-mobile" alt="logo">
+        <img src="./img/bigITP.png" class="logo-desktop" alt="logo">
     </div>
     <button class="hamburger ${
       menuIsOpen ? "open" : ""
-    }" onclick="toggleMenu()">
+    }" aria-label="Toggle menu">
         <div class="bar"></div>
         <div class="bar"></div>
         <div class="bar"></div>
     </button>
-
     <div class="nav-list ${menuIsOpen ? "show" : ""}">
-        ${navItems}
-    </div>
+        ${generateNavItems()} </div>
   `;
+  attachNavListeners();
 }
+
 function displayHeader() {
   headerElement.innerHTML = /* html */ `
   <div class="header container">
@@ -169,10 +191,10 @@ function displayProjects() {
       ? /* html */ `
     <div class="carousel-controls">
         <button class="arrow prev" id="prevBtn">
-        <img src="./img/strzalka.png" class="arrow-icon arrow-next" alt="ikonaStrzalkiDoPrzodu">
+        <img src="./img/strzalka.png" class="arrow-icon arrow-prev" alt="ikonaStrzalkiDoPrzodu">
         </button>
         <button class="arrow next" id="nextBtn">
-        <img src="./img/strzalka.png" class="arrow-icon arrow-prev" alt="ikonaStrzalkiDoTylu"></button>
+        <img src="./img/strzalka.png" class="arrow-icon arrow-next" alt="ikonaStrzalkiDoTylu"></button>
     </div>`
       : "";
 
@@ -197,15 +219,24 @@ function displayProjects() {
 function displayFooter() {
   footerElement.innerHTML = /* html */ `
     <div class="footer-container">
-        <div class="footer-contact">
-            <a href="mailto:${appData.footer.email}">${appData.footer.email}</a>
-            <a href="tel:${appData.footer.phone}">${appData.footer.phone}</a>
-        </div>
-        <div class="footer-logo">
-            <span class="gold">ITP</span><span class="grey">ortfolio</span> &copy; 2026
+        <nav class="footer-nav">
+            ${generateNavItems()} </nav>
+        <div class="footer-info">
+            <div class="footer-contact">
+                <a href="mailto:${appData.footer.email}">${
+    appData.footer.email
+  }</a>
+                <a href="tel:${appData.footer.phone}">${
+    appData.footer.phone
+  }</a>
+            </div>
+            <div class="footer-logo">
+                <span class="gold">ITP</span>ortfolio &copy; 2026
+            </div>
         </div>
     </div>`;
 }
+
 function moveCarousel(direction) {
   const projectsCount = appData.projects.length;
   carouselIndex = (carouselIndex + direction + projectsCount) % projectsCount;
@@ -218,6 +249,7 @@ function toggleMenu() {
 function setPage(page) {
   currentPage = page;
   menuIsOpen = false;
+  carouselIndex = 0;
   display(); // Nie przypominam sobie, zebysmy poruszali to na kursie.
 }
 function display() {
@@ -229,5 +261,6 @@ function display() {
     displayProjects();
   }
   displayFooter();
+  attachNavListeners();
 }
 display();
