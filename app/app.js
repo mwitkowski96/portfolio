@@ -231,7 +231,7 @@ function displayFooter() {
   }</a>
             </div>
             <div class="footer-logo">
-                <span class="gold">ITP</span>ortfolio &copy; 2026
+                <span class="gold">ITP</span>ortfolio  <span class="white">&copy; 2026</span>
             </div>
         </div>
     </div>`;
