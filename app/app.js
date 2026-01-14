@@ -479,7 +479,7 @@ function handleAddProject(e) {
       id: Date.now(),
       title: titleVal,
       tech: techVal
-        .split(/[ ,-]+/)
+        .split(/[-]+/)
         .map((t) => t.trim())
         .filter((t) => t !== ""),
     };

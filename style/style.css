@@ -164,7 +164,7 @@ body {
   border: none;
   color: var(--white-color);
   font-size: 1rem;
-  width: max-content;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -466,7 +466,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 84px 0;
+  margin-bottom: 84px;
 }
 
 .add-project-btn {
@@ -609,7 +609,6 @@ body {
 
 .about-text-section {
   margin-bottom: 3.5rem;
-  /* font-family: "Roboto", sans-serif; */
 }
 
 .about-text-section h2 {
@@ -630,7 +629,7 @@ body {
 .contact-redirect-container {
   display: flex;
   justify-content: center;
-  margin-top: 2rem;
+  margin-top: 84px;
 }
 
 .contact-redirect-btn {
@@ -804,6 +803,10 @@ body {
     gap: 3rem 1.65rem;
   }
 
+  .projects-list {
+    gap: 84px 41px;
+  }
+
   /* Footer START */
 
   #footer {
@@ -826,6 +829,14 @@ body {
     align-items: flex-start;
     gap: 1.875rem;
     margin-bottom: 90px;
+  }
+
+  .footer-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 168px;
+    list-style-type: none;
   }
 
   .footer-nav button {
