@@ -65,9 +65,9 @@ body {
 }
 
 .about-wrapper,
-.about-page-wrapper {
+.about-page-wrapper,
+.about-container {
   max-width: 958px;
-  background-color: red;
 }
 
 .wrapper {
