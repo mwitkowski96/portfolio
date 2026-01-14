@@ -9,6 +9,10 @@ let appData = {
     photo: "./img/IMG_0826.jpg",
     about:
       "Aspirujący programista i konsultant IT, który łączy techniczne zacięcie z marketingowym wyczuciem. Pomagam firmom optymalizować procesy technologiczne oraz tworzę materiały promocyjne, które skutecznie budują wizerunek marki. Moim celem jest dostarczanie rozwiązań, które pozwolą Twojemu biznesowi w pełni rozwinąć skrzydła i zyskać przewagę na cyfrowym rynku.",
+    myBackground:
+      "Ukończyłem studia wyższe na kierunku Informatyka Stosowana na Politechnice Warszawskiej, gdzie zdobyłem solidne podstawy teoretyczne i praktyczne w dziedzinie programowania oraz technologii informatycznych. Podczas studiów aktywnie uczestniczyłem w projektach zespołowych, co pozwoliło mi rozwinąć umiejętności współpracy i zarządzania czasem. Poza uczelnią, samodzielnie pogłębiałem swoją wiedzę poprzez kursy online i praktyczne projekty, co umożliwiło mi zdobycie doświadczenia w tworzeniu stron internetowych i aplikacji.",
+    myHobbies:
+      "Poza światem programowania, interesuje się tworzeniem projektów 3D w programie Fusion 360, regularnie dbam o swoje zdrowie na siłowni, chętnie podróżuję, a także rozwijam swoje umiejętności kulinarne, eksperymentując z różnymi kuchniami świata.",
     skills: [
       { name: "HTML", yearsOfExperience: 5, img: "./IMG/HTML5.png" },
       { name: "CSS", yearsOfExperience: 5, img: "./IMG/symbol.png" },
@@ -68,7 +72,6 @@ function generateNavItems() {
     )
     .join("");
 }
-
 //Funkcja generujaca projekty
 function generateProjectCard(project, showDelete = false) {
   const techStack = project.tech.map((t) => `<li>${t}</li>`).join("");
@@ -125,6 +128,7 @@ function displayNav() {
 }
 function displayHeader() {
   let headerContent = "";
+  const firstName = appData.header.name.split(" ")[0].toUpperCase();
 
   if (currentPage === "Home") {
     headerContent = /*html*/ `
@@ -137,6 +141,18 @@ function displayHeader() {
       <div class="header container">
         <h1 class="header-heading projects-title">MY PROJECTS</h1>
         <span class="header-subtitle">Made with love</span>
+      </div>`;
+  } else if (currentPage === "About") {
+    headerContent = /*html*/ `
+      <div class="header container">
+        <h1 class="header-heading projects-title">ABOUT ME</h1>
+        <span class="header-subtitle">IT'S A-ME, ${firstName}!</span>
+      </div>`;
+  } else if (currentPage === "Contact") {
+    headerContent = /*html*/ `
+      <div class="header container">
+        <h1 class="header-heading projects-title">contact ME</h1>
+        <span class="header-subtitle">Say hello to me</span>
       </div>`;
   } else {
     headerContent = /*html*/ `
@@ -157,7 +173,7 @@ function setPage(page) {
   carouselIndex = 0;
   display(); // Nie przypominam sobie, zebysmy poruszali to na kursie.
 }
-function getAboutHTML() {
+function displayAboutSection() {
   const skills = appData.about.skills
     .map((skill) => {
       let yearsOfExperience = "";
@@ -193,7 +209,7 @@ function getAboutHTML() {
     </section>
   `;
 }
-function getProjectsCarouselHTML() {
+function displayCarouselSection() {
   const projectsCount = appData.projects.length;
   if (projectsCount === 0) {
     return /* html */ `
@@ -229,6 +245,7 @@ function getProjectsCarouselHTML() {
 
   return /* html */ `
     <section id="projects" class="projects-section">
+    <div class="projects-section-wrapper wrapper">
         <div class="carousel-box">
             <div class="projects-list">${projectsHTML}</div>
             ${controlButtons}
@@ -260,6 +277,40 @@ function moveCarousel(direction) {
   carouselIndex = (carouselIndex + direction + projectsCount) % projectsCount;
   display();
 }
+function renderAboutPage() {
+  const photo = appData.about.photo;
+  const bg = appData.about.myBackground;
+  const hobby = appData.about.myHobbies;
+
+  mainElement.innerHTML = /* html */ `
+    <section class="about-page-container container">
+    <div class="about-page-wrapper wrapper">
+       <img src="${photo}" alt="Profile" class="about-hero-img">
+       
+       <div class="about-text-section">
+          <h2>My background</h2>
+          <p>${bg}</p>
+       </div>
+
+       <div class="about-text-section">
+          <h2>My hobbies and interests</h2>
+          <p>${hobby}</p>
+       </div>
+
+       <div class="contact-redirect-container">
+          <button id="goToContactBtn" class="contact-redirect-btn">
+          <img src="./img/strzalka.png" alt="Przycisk przekierowujacy do kontaktu" class="contact-icon">Contact me
+          </button>
+       </div>
+       </div>
+    </section>
+  `;
+
+  const contactBtn = document.getElementById("goToContactBtn");
+  if (contactBtn) {
+    contactBtn.onclick = () => setPage("Contact");
+  }
+}
 function renderProjectsPage() {
   const allProjectsHTML = appData.projects
     .map((project) => generateProjectCard(project, true))
@@ -267,6 +318,7 @@ function renderProjectsPage() {
 
   mainElement.innerHTML = /* html */ `
     <section class="projects-section container">
+    <div class="about-wrapper wrapper">
       <div class="add-project-container">
         <button id="addProjectBtn" class="add-project-btn">
           <img src="./img/plus.png" alt="plus" class="add-icon">
@@ -274,12 +326,13 @@ function renderProjectsPage() {
         </button>
       </div>
 
-      <div class="projects-list">
+        <div class="projects-list">
         ${
           appData.projects.length > 0
             ? allProjectsHTML
             : "<p>No projects to display.</p>"
         }
+        </div>
       </div>
     </section>
   `;
@@ -294,6 +347,43 @@ function renderProjectsPage() {
       deleteProject(projectId);
     };
   });
+}
+function renderContactPage() {
+  mainElement.innerHTML = /* html */ `
+    <section class="contact-section container">
+      <div class="contact-wrapper wrapper">
+        <h2 class="contact-main-heading">Contact me</h2>
+
+        <form id="contactForm" class="contact-form">
+          <div class="form-group name-group">
+            <label for="contactName">Name</label>
+            <input type="text" id="contactName" placeholder="Your Name">
+            <span id="nameError" class="error-msg"></span>
+          </div>
+
+          <div class="form-group email-group">
+            <label for="contactEmail">Email</label>
+            <input type="email" id="contactEmail" placeholder="email@example.com">
+            <span id="emailError" class="error-msg"></span>
+          </div>
+
+          <div class="form-group message-group">
+            <label for="contactMessage">Message</label>
+            <textarea id="contactMessage" placeholder="Hello, my name is . . . " rows="1"></textarea>
+            <span id="msgError" class="error-msg"></span>
+          </div>
+
+          <div class="form-submit-container">
+            <button type="submit" class="contact-submit-btn">
+               Send message
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+  `;
+
+  document.getElementById("contactForm").onsubmit = handleContactSubmit;
 }
 function deleteProject(id) {
   appData.projects = appData.projects.filter((p) => p.id !== id);
@@ -387,24 +477,27 @@ function display() {
   displayNav();
   displayHeader();
 
-  // Czyścimy widok
   mainElement.innerHTML = "";
 
   if (currentPage === "Home") {
-    const aboutHTML = getAboutHTML();
-    const projectsHTML = getProjectsCarouselHTML();
+    const aboutHTML = displayAboutSection();
+    const projectsHTML = displayCarouselSection();
     mainElement.innerHTML = aboutHTML + projectsHTML;
 
     if (appData.projects.length > 3) {
-      document
-        .getElementById("prevBtn")
-        .addEventListener("click", () => moveCarousel(-1));
-      document
-        .getElementById("nextBtn")
-        .addEventListener("click", () => moveCarousel(1));
+      const prev = document.getElementById("prevBtn");
+      const next = document.getElementById("nextBtn");
+      if (prev) prev.onclick = () => moveCarousel(-1);
+      if (next) next.onclick = () => moveCarousel(1);
     }
   } else if (currentPage === "Projects") {
     renderProjectsPage();
+  } else if (currentPage === "About") {
+    renderAboutPage();
+  } else if (currentPage === "Contact") {
+    renderContactPage();
+  } else if (currentPage === "Messages") {
+    mainElement.innerHTML = /* html */ `<section class="container"><h2>Messages</h2></section>`;
   }
 
   displayFooter();
