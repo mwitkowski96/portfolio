@@ -214,7 +214,7 @@ function displayAboutSection() {
 
   return /* html */ `
   <section id="about" class="about-section container">
-      <div class="about-container wrapper">
+      <div class="about-container about-wrapper wrapper">
           <img src="${appData.about.photo}" class="about-photo">
           <h2 class="about-heading heading">About me</h2>
           <p class="about-desc">${appData.about.about}</p>
@@ -315,7 +315,7 @@ function renderProjectsPage() {
 
   mainElement.innerHTML = /* html */ `
     <section class="projects-section container">
-    <div class="about-wrapper wrapper">
+    <div class="about wrapper">
       <div class="add-project-container">
         <button id="addProjectBtn" class="add-project-btn">
           <img src="./img/plus.png" alt="plus" class="add-icon">
@@ -349,7 +349,7 @@ function renderContactPage() {
     <section class="contact-section container">
       <div class="contact-wrapper wrapper">
         <h2 class="contact-main-heading">Contact me</h2>
-        <form id="contactForm" class="contact-grid-form" novalidate>
+        <form id="contactForm" class="contact-form" novalidate>
           <div class="form-group name-group">
             <label for="contactName">Name</label>
             <input type="text" id="contactName" placeholder="Your Name">

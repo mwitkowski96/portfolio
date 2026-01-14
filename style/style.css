@@ -60,18 +60,23 @@ body {
   margin: 0 auto;
 }
 
+.container {
+  max-width: 1200px;
+}
+
+.about-wrapper,
+.about-page-wrapper {
+  max-width: 958px;
+  background-color: red;
+}
+
 .wrapper {
   padding: 84px 16px;
-  max-width: 1200px;
   margin: 0 auto;
 }
 
 .section {
   padding: 84px 0;
-}
-
-.container {
-  max-width: 1200px;
 }
 
 .hamburger {
@@ -207,7 +212,6 @@ body {
 }
 
 .about-container {
-  max-width: 958px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -706,7 +710,7 @@ body {
 .form-submit-container {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin: 84px auto 0 auto;
 }
 
 .contact-submit-btn {
@@ -733,6 +737,10 @@ body {
   }
   .nav-wrapper {
     padding-top: 37px;
+  }
+
+  .header-subtitle {
+    margin-top: 4px;
   }
 
   .about-container {
@@ -805,6 +813,24 @@ body {
 
   .projects-list {
     gap: 84px 41px;
+  }
+
+  .contact-form {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 65px;
+  }
+
+  .name-group,
+  .email-group {
+    width: calc(50% - 65px);
+  }
+
+  .form-submit-container {
+    margin: 65px auto 0 auto;
   }
 
   /* Footer START */
