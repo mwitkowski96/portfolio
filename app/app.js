@@ -1,4 +1,3 @@
-// Dane aplikacji webowej.
 let appData = {
   navItems: ["Home", "Projects", "About", "Contact", "Messages"],
   header: {
@@ -46,33 +45,30 @@ let appData = {
     email: "marek.witkowski96@icloud.com",
     phone: "+48 123 456 789",
   },
-  messages: [],
+  messages: [], // Lista pusta na starcie
 };
-
-// Wyniesienie elementow DOM
 const navElement = document.getElementById("nav");
 const headerElement = document.getElementById("header");
 const mainElement = document.getElementById("main");
 const footerElement = document.getElementById("footer");
 
-//Domyslne ustawienia aplikacji
 let currentPage = "Home";
 let menuIsOpen = false;
 let carouselIndex = 0;
 
-// Funkcj generujaca nawigacje
 function generateNavItems() {
   return appData.navItems
     .map(
       (navItem) /*html*/ =>
-        `<button class="nav-btn ${currentPage === navItem ? "active" : ""}" 
-                 data-page="${navItem}"> 
-            ${navItem}
-        </button>`
+        `<li>
+          <button class="nav-btn ${currentPage === navItem ? "active" : ""}" 
+                  data-page="${navItem}"> 
+             ${navItem}
+          </button>
+        </li>`
     )
     .join("");
 }
-//Funkcja generujaca projekty
 function generateProjectCard(project, showDelete = false) {
   const techStack = project.tech.map((t) => `<li>${t}</li>`).join("");
   const deleteBtn = showDelete
@@ -90,7 +86,6 @@ function generateProjectCard(project, showDelete = false) {
       </div>
     </div>`;
 }
-// Event listenery na buttony nawigacji
 function attachNavListeners() {
   const buttons = document.querySelectorAll(".nav-btn");
   buttons.forEach((button) => {
@@ -101,77 +96,99 @@ function attachNavListeners() {
     });
   });
 
-  // Obsługa menu hamburgerowego
   const hamburger = document.querySelector(".hamburger");
   if (hamburger) {
+    hamburger.removeEventListener("click", toggleMenu);
     hamburger.addEventListener("click", toggleMenu);
   }
 }
-//Wyswietlenie sekcji
+
 function displayNav() {
   navElement.innerHTML = /* html */ `
-    <div class="logo">
-        <img src="./img/smallITP.png" class="logo-mobile" alt="logo">
-        <img src="./img/bigITP.png" class="logo-desktop" alt="logo">
+    <div class="nav-wrapper">
+      <div class="logo">
+          <img src="./img/smallITP.png" class="logo-mobile" alt="logo">
+          <img src="./img/bigITP.png" class="logo-desktop" alt="logo">
+      </div>
+      
+      <nav class="nav-list-container ${menuIsOpen ? "show" : ""}">
+        <ul class="nav-list">
+            ${generateNavItems()}
+        </ul>
+      </nav>
+
+      <button class="hamburger ${
+        menuIsOpen ? "open" : ""
+      }" aria-label="Toggle menu">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+      </button>
     </div>
-    <button class="hamburger ${
-      menuIsOpen ? "open" : ""
-    }" aria-label="Toggle menu">
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-    </button>
-    <div class="nav-list ${menuIsOpen ? "show" : ""}">
-        ${generateNavItems()} </div>
   `;
-  attachNavListeners();
 }
+
 function displayHeader() {
-  let headerContent = "";
   const firstName = appData.header.name.split(" ")[0].toUpperCase();
 
-  if (currentPage === "Home") {
-    headerContent = /*html*/ `
-      <div class="header container">
-        <h1 class="header-heading">${appData.header.name}</h1>
-        <p class="header-subtitle">${appData.header.title}</p>
-      </div>`;
-  } else if (currentPage === "Projects") {
-    headerContent = /*html*/ `
-      <div class="header container">
-        <h1 class="header-heading projects-title">MY PROJECTS</h1>
-        <span class="header-subtitle">Made with love</span>
-      </div>`;
-  } else if (currentPage === "About") {
-    headerContent = /*html*/ `
-      <div class="header container">
-        <h1 class="header-heading projects-title">ABOUT ME</h1>
-        <span class="header-subtitle">IT'S A-ME, ${firstName}!</span>
-      </div>`;
-  } else if (currentPage === "Contact") {
-    headerContent = /*html*/ `
-      <div class="header container">
-        <h1 class="header-heading projects-title">contact ME</h1>
-        <span class="header-subtitle">Say hello to me</span>
-      </div>`;
-  } else {
-    headerContent = /*html*/ `
-      <div class="header container">
-        <h1 class="header-heading projects-title">${currentPage.toUpperCase()}</h1>
-      </div>`;
-  }
+  const headerContentMap = {
+    Home: { title: appData.header.name, subtitle: appData.header.title },
+    Projects: { title: "MY PROJECTS", subtitle: "Made with love" },
+    About: { title: "ABOUT ME", subtitle: `IT'S A-ME, ${firstName}!` },
+    Contact: { title: "CONTACT ME", subtitle: "Say hello to me" },
+    Messages: {
+      title: "MESSAGES",
+      subtitle: "Message from the interested person",
+    },
+  };
 
-  headerElement.innerHTML = headerContent;
+  const current = headerContentMap[currentPage] || headerContentMap["Home"];
+
+  headerElement.innerHTML = /* html */ `
+      <div class="header container">
+        <h1 class="header-heading ${
+          currentPage !== "Home" ? "projects-title" : ""
+        }">
+            ${current.title}
+        </h1>
+        <span class="header-subtitle">${current.subtitle}</span>
+      </div>`;
+}
+
+function displayFooter() {
+  footerElement.innerHTML = /* html */ `
+    <div class="footer-container">
+        <nav class="footer-nav">
+            <ul class="footer-nav-list">
+                ${generateNavItems()}
+            </ul>
+        </nav>
+        <div class="footer-info">
+            <div class="footer-contact">
+                <a href="mailto:${appData.footer.email}">${
+    appData.footer.email
+  }</a>
+                <a href="tel:${appData.footer.phone}">${
+    appData.footer.phone
+  }</a>
+            </div>
+            <div class="footer-logo">
+                <span class="gold">ITP</span>ortfolio <span class="white">&copy; 2026</span>
+            </div>
+        </div>
+    </div>`;
 }
 function toggleMenu() {
   menuIsOpen = !menuIsOpen;
   displayNav();
+  attachNavListeners();
 }
+
 function setPage(page) {
   currentPage = page;
   menuIsOpen = false;
   carouselIndex = 0;
-  display(); // Nie przypominam sobie, zebysmy poruszali to na kursie.
+  display();
 }
 function displayAboutSection() {
   const skills = appData.about.skills
@@ -201,14 +218,15 @@ function displayAboutSection() {
           <img src="${appData.about.photo}" class="about-photo">
           <h2 class="about-heading heading">About me</h2>
           <p class="about-desc">${appData.about.about}</p>
-      </div>
-      <div class="skills-container wrapper">
+          <div class="skills-container">
           <h2 class="skills-heading heading">My Skills</h2>
           <div class="skills-list">${skills}</div>
+      </div>
       </div>
     </section>
   `;
 }
+
 function displayCarouselSection() {
   const projectsCount = appData.projects.length;
   if (projectsCount === 0) {
@@ -245,38 +263,21 @@ function displayCarouselSection() {
 
   return /* html */ `
     <section id="projects" class="projects-section">
-    <div class="projects-section-wrapper wrapper">
+    <div class="projects-section-wrapper">
         <div class="carousel-box">
             <div class="projects-list">${projectsHTML}</div>
             ${controlButtons}
         </div>
+    </div>
     </section>`;
 }
-function displayFooter() {
-  footerElement.innerHTML = /* html */ `
-    <div class="footer-container">
-        <nav class="footer-nav">
-            ${generateNavItems()} </nav>
-        <div class="footer-info">
-            <div class="footer-contact">
-                <a href="mailto:${appData.footer.email}">${
-    appData.footer.email
-  }</a>
-                <a href="tel:${appData.footer.phone}">${
-    appData.footer.phone
-  }</a>
-            </div>
-            <div class="footer-logo">
-                <span class="gold">ITP</span>ortfolio  <span class="white">&copy; 2026</span>
-            </div>
-        </div>
-    </div>`;
-}
+
 function moveCarousel(direction) {
   const projectsCount = appData.projects.length;
   carouselIndex = (carouselIndex + direction + projectsCount) % projectsCount;
   display();
 }
+
 function renderAboutPage() {
   const photo = appData.about.photo;
   const bg = appData.about.myBackground;
@@ -286,31 +287,27 @@ function renderAboutPage() {
     <section class="about-page-container container">
     <div class="about-page-wrapper wrapper">
        <img src="${photo}" alt="Profile" class="about-hero-img">
-       
        <div class="about-text-section">
           <h2>My background</h2>
           <p>${bg}</p>
        </div>
-
        <div class="about-text-section">
           <h2>My hobbies and interests</h2>
           <p>${hobby}</p>
        </div>
-
        <div class="contact-redirect-container">
           <button id="goToContactBtn" class="contact-redirect-btn">
           <img src="./img/strzalka.png" alt="Przycisk przekierowujacy do kontaktu" class="contact-icon">Contact me
           </button>
        </div>
-       </div>
+    </div>
     </section>
   `;
 
   const contactBtn = document.getElementById("goToContactBtn");
-  if (contactBtn) {
-    contactBtn.onclick = () => setPage("Contact");
-  }
+  if (contactBtn) contactBtn.onclick = () => setPage("Contact");
 }
+
 function renderProjectsPage() {
   const allProjectsHTML = appData.projects
     .map((project) => generateProjectCard(project, true))
@@ -342,19 +339,17 @@ function renderProjectsPage() {
   const deleteButtons = document.querySelectorAll(".delete-btn");
   deleteButtons.forEach((btn) => {
     btn.onclick = () => {
-      const projectId = Number(btn.dataset.id);
-      // POPRAWKA: Tylko deleteProject, bez dodatkowego display()
-      deleteProject(projectId);
+      deleteProject(Number(btn.dataset.id));
     };
   });
 }
+
 function renderContactPage() {
   mainElement.innerHTML = /* html */ `
     <section class="contact-section container">
       <div class="contact-wrapper wrapper">
         <h2 class="contact-main-heading">Contact me</h2>
-
-        <form id="contactForm" class="contact-form">
+        <form id="contactForm" class="contact-grid-form" novalidate>
           <div class="form-group name-group">
             <label for="contactName">Name</label>
             <input type="text" id="contactName" placeholder="Your Name">
@@ -374,9 +369,7 @@ function renderContactPage() {
           </div>
 
           <div class="form-submit-container">
-            <button type="submit" class="contact-submit-btn">
-               Send message
-            </button>
+            <button type="submit" class="contact-submit-btn">Send message</button>
           </div>
         </form>
       </div>
@@ -385,16 +378,46 @@ function renderContactPage() {
 
   document.getElementById("contactForm").onsubmit = handleContactSubmit;
 }
+
+function renderMessagesPage() {
+  const messagesHTML = appData.messages
+    .map(
+      (msg) => /* html */ `
+    <div class="message-item">
+      <div class="message-row"><strong>Name:</strong> ${msg.name}</div>
+      <div class="message-row"><strong>Email:</strong> ${msg.email}</div>
+      <div class="message-row"><strong>Message:</strong> ${
+        msg.message || msg.text
+      }</div>
+    </div>`
+    )
+    .join("");
+
+  mainElement.innerHTML = /* html */ `
+    <section class="messages-section container">
+    <div class="messages-wrapper wrapper">
+      <div class="messages-list">
+        ${
+          appData.messages.length > 0
+            ? messagesHTML
+            : '<p class="empty-state-msg">No messages yet. Send one from the Contact page!</p>'
+        }
+      </div>
+    </div>
+    </section>
+  `;
+}
+
 function deleteProject(id) {
   appData.projects = appData.projects.filter((p) => p.id !== id);
   display();
 }
+
 function openAddProjectModal() {
   const modalHTML = /* html */ `
     <div id="modalOverlay" class="modal-overlay">
       <div class="modal-window">
         <button id="closeModal" class="close-x">&times;</button>
-        
         <form id="addProjectForm" class="modal-form">
           <div class="form-row">
             <label for="newTitle">Project title</label>
@@ -403,7 +426,6 @@ function openAddProjectModal() {
                 <span id="titleError" class="error-msg"></span>
             </div>
           </div>
-
           <div class="form-row">
             <label for="newTech">Technologies</label>
             <div class="input-wrapper">
@@ -411,10 +433,8 @@ function openAddProjectModal() {
                 <span id="techError" class="error-msg"></span>
             </div>
           </div>
-
           <button type="submit" class="modal-submit-btn">
-            <img src="./img/plus.png" alt="plus">
-            Add project
+            <img src="./img/plus.png" alt="plus"> Add project
           </button>
         </form>
       </div>
@@ -427,9 +447,9 @@ function openAddProjectModal() {
   document.getElementById("closeModal").onclick = closeModal;
   document.getElementById("addProjectForm").onsubmit = handleAddProject;
 }
+
 function handleAddProject(e) {
   e.preventDefault();
-
   const titleVal = document.getElementById("newTitle").value.trim();
   const techVal = document.getElementById("newTech").value.trim();
   const titleErr = document.getElementById("titleError");
@@ -468,39 +488,127 @@ function handleAddProject(e) {
     display();
   }
 }
+
+function handleContactSubmit(e) {
+  e.preventDefault();
+
+  const nameInput = document.getElementById("contactName");
+  const emailInput = document.getElementById("contactEmail");
+  const msgInput = document.getElementById("contactMessage");
+
+  const nameErr = document.getElementById("nameError");
+  const emailErr = document.getElementById("emailError");
+  const msgErr = document.getElementById("msgError");
+
+  const colorError = "#d93025";
+  const colorDefault = "var(--main-color)";
+
+  [nameInput, emailInput, msgInput].forEach(
+    (el) => (el.style.borderBottomColor = colorDefault)
+  );
+  [nameErr, emailErr, msgErr].forEach((el) => (el.innerText = ""));
+
+  let isValid = true;
+
+  const nameVal = nameInput.value.trim();
+  if (nameVal.length < 3) {
+    nameErr.innerText = "The name must be at least 3 characters long.";
+    nameInput.style.borderBottomColor = colorError;
+    isValid = false;
+  } else if (nameVal.length > 20) {
+    nameErr.innerText = "The name must not exceed 20 characters.";
+    nameInput.style.borderBottomColor = colorError;
+    isValid = false;
+  }
+
+  const emailVal = emailInput.value.trim();
+  const emailRegexp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!emailRegexp.test(emailVal)) {
+    emailErr.innerText = "Please enter a valid email address.";
+    emailInput.style.borderBottomColor = colorError;
+    isValid = false;
+  }
+
+  const msgVal = msgInput.value.trim();
+  if (msgVal === "") {
+    msgErr.innerText = "The message cannot be empty.";
+    msgInput.style.borderBottomColor = colorError;
+    isValid = false;
+  } else if (msgVal.length > 100) {
+    msgErr.innerText = "The message must not exceed 100 characters.";
+    msgInput.style.borderBottomColor = colorError;
+    isValid = false;
+  }
+
+  if (isValid) {
+    appData.messages.push({
+      id: Date.now(),
+      name: nameVal,
+      email: emailVal,
+      message: msgVal,
+      date: new Date().toLocaleString(),
+    });
+
+    mainElement.innerHTML = /* html */ `
+      <div class="container" style="text-align: center; padding: 100px 0;">
+        <h2 class="contact-main-heading" style="margin-bottom: 20px;">Message sent!</h2>
+        <p class="about-desc">Thank you ${nameVal}, your message has been saved.</p>
+        <button class="contact-submit-btn" style="margin-top: 40px;" onclick="setPage('Home')">
+          Return to Home
+        </button>
+      </div>
+    `;
+    console.log("Database updated:", appData.messages);
+  }
+}
+
 function closeModal() {
   const modal = document.getElementById("modalOverlay");
   if (modal) modal.remove();
   document.body.style.overflow = "auto";
 }
+
+// --- GŁÓWNA FUNKCJA RENDERUJĄCA ---
+
 function display() {
   displayNav();
   displayHeader();
 
   mainElement.innerHTML = "";
 
-  if (currentPage === "Home") {
-    const aboutHTML = displayAboutSection();
-    const projectsHTML = displayCarouselSection();
-    mainElement.innerHTML = aboutHTML + projectsHTML;
+  switch (currentPage) {
+    case "Home":
+      const aboutHTML = displayAboutSection();
+      const projectsHTML = displayCarouselSection();
+      mainElement.innerHTML = aboutHTML + projectsHTML;
 
-    if (appData.projects.length > 3) {
-      const prev = document.getElementById("prevBtn");
-      const next = document.getElementById("nextBtn");
-      if (prev) prev.onclick = () => moveCarousel(-1);
-      if (next) next.onclick = () => moveCarousel(1);
-    }
-  } else if (currentPage === "Projects") {
-    renderProjectsPage();
-  } else if (currentPage === "About") {
-    renderAboutPage();
-  } else if (currentPage === "Contact") {
-    renderContactPage();
-  } else if (currentPage === "Messages") {
-    mainElement.innerHTML = /* html */ `<section class="container"><h2>Messages</h2></section>`;
+      if (appData.projects.length > 3) {
+        const prev = document.getElementById("prevBtn");
+        const next = document.getElementById("nextBtn");
+        if (prev) prev.onclick = () => moveCarousel(-1);
+        if (next) next.onclick = () => moveCarousel(1);
+      }
+      break;
+
+    case "Projects":
+      renderProjectsPage();
+      break;
+
+    case "About":
+      renderAboutPage();
+      break;
+
+    case "Contact":
+      renderContactPage();
+      break;
+
+    case "Messages":
+      renderMessagesPage();
+      break;
   }
 
   displayFooter();
   attachNavListeners();
 }
+
 display();
