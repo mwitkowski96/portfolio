@@ -62,11 +62,14 @@ body {
 
 .container {
   max-width: 1200px;
+  margin: 0 auto;
 }
 
 .about-wrapper,
 .about-page-wrapper,
-.about-container {
+.about-container,
+.messages-wrapper,
+.contact-wrapper {
   max-width: 958px;
 }
 
