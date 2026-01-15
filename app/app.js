@@ -45,7 +45,20 @@ let appData = {
     email: "marek.witkowski96@icloud.com",
     phone: "+48 123 456 789",
   },
-  messages: [],
+  messages: [
+    {
+      id: 1,
+      name: "John Doe",
+      email: "john.doe@example.com",
+      message: "Hello, I would like to know more about your services.",
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      email: "jane.smith@example.com",
+      message: "I'm interested in your web design services.",
+    },
+  ],
 };
 
 const navElement = document.getElementById("nav");
@@ -101,7 +114,7 @@ function getHomeAboutSectionHTML() {
           i < skill.yearsOfExperience ? "filled" : "empty"
         }"></span>`;
       }
-      return `
+      return /*html*/ `
       <div class="skill-item">
         <img src="${skill.img}" alt="${skill.name}" class="skill-img">
         <div class="skill-info">
@@ -115,7 +128,7 @@ function getHomeAboutSectionHTML() {
     })
     .join("");
 
-  return `
+  return /*html*/ `
     <section id="about" class="about-section container">
       <div class="about-container wrapper">
           <img src="${appData.about.photo}" class="about-photo">
@@ -145,14 +158,14 @@ function getHomeCarouselSectionHTML() {
     .join("");
   const controls =
     count > 3
-      ? `
+      ? /*html*/ `
     <div class="carousel-controls">
         <button class="arrow prev" id="prevBtn"><img src="./img/strzalka.png" class="arrow-icon arrow-prev"></button>
         <button class="arrow next" id="nextBtn"><img src="./img/strzalka.png" class="arrow-icon arrow-next"></button>
     </div>`
       : "";
 
-  return `
+  return /*html*/ `
     <section id="projects" class="projects-section">
       <div class="projects-section-wrapper wrapper">
           <div class="carousel-box">
@@ -164,7 +177,7 @@ function getHomeCarouselSectionHTML() {
 }
 
 function getAboutPageHTML() {
-  return `
+  return /*html*/ `
     <section class="about-page-container container">
       <div class="about-page-wrapper wrapper">
          <img src="${appData.about.photo}" alt="Profile" class="about-hero-img">
@@ -183,7 +196,7 @@ function getProjectsPageHTML() {
   const projectsHTML = appData.projects
     .map((p) => generateProjectCard(p, true))
     .join("");
-  return `
+  return /*html*/ `
     <section class="projects-section container">
       <div class="projects-wrapper wrapper">
         <div class="add-project-container">
@@ -199,7 +212,7 @@ function getProjectsPageHTML() {
 }
 
 function getContactPageHTML() {
-  return `
+  return /*html*/ `
     <section class="contact-section container">
       <div class="contact-wrapper wrapper">
         <h2 class="contact-main-heading">Contact me</h2>
@@ -216,18 +229,18 @@ function getContactPageHTML() {
 function getMessagesPageHTML() {
   const list = appData.messages
     .map(
-      (m) => `
-    <div class="message-item">
-      <div class="message-row"><strong>Name:</strong> ${m.name}</div>
-      <div class="message-row"><strong>Email:</strong> ${m.email}</div>
-      <div class="message-row"><strong>Message:</strong> ${m.message}</div>
-    </div>`
+      (m) => /*html*/ `
+    <ul class="message-items">
+      <li class="message-row"><strong>Name:</strong> ${m.name}</li>
+      <li class="message-row"><strong>Email:</strong> ${m.email}</li>
+      <li class="message-row"><strong>Message:</strong> ${m.message}</li>
+    </ul>`
     )
     .join("");
-  return `
+  return /*html*/ `
     <section class="messages-section container">
       <div class="messages-wrapper wrapper">
-        <div class="messages-list">${list || "<p>No messages yet.</p>"}</div>
+        <div class="messages-list">${list}</div>
       </div>
     </section>`;
 }
@@ -268,7 +281,7 @@ function attachPageListeners() {
 // --- MODAL I FORMULARZE ---
 
 function openAddProjectModal() {
-  const modalHTML = `
+  const modalHTML = /*html*/ `
     <div id="modalOverlay" class="modal-overlay">
       <div class="modal-window">
         <button id="closeModal" class="close-x">&times;</button>
@@ -374,10 +387,11 @@ function deleteProject(id) {
 }
 
 function displayNav() {
-  navElement.innerHTML = `
+  navElement.innerHTML = /*html*/ `
     <div class="nav-wrapper">
       <div class="logo">
-          <img src="./img/smallITP.png" class="logo-mobile"><img src="./img/bigITP.png" class="logo-desktop">
+          <span class="logo-mobile gold">ITP</span>
+          <span class="logo-desktop gold">ITP<span class="grey">ortfolio</span></span>
       </div>
       <nav class="nav-list-container ${menuIsOpen ? "show" : ""}">
         <ul class="nav-list">${generateNavItems()}</ul>
@@ -394,7 +408,10 @@ function displayHeader() {
     Projects: { title: "MY PROJECTS", subtitle: "Made with love" },
     About: { title: "ABOUT ME", subtitle: `IT'S A-ME!` },
     Contact: { title: "CONTACT ME", subtitle: "Say hello" },
-    Messages: { title: "MESSAGES", subtitle: "Incoming inbox" },
+    Messages: {
+      title: "MESSAGES",
+      subtitle: "Message from the interested person",
+    },
   };
   const current = headerContentMap[currentPage] || headerContentMap["Home"];
   headerElement.innerHTML = `
@@ -407,7 +424,7 @@ function displayHeader() {
 }
 
 function displayFooter() {
-  footerElement.innerHTML = `
+  footerElement.innerHTML = /*html*/ `
     <div class="footer-container">
         <nav class="footer-nav"><ul class="footer-nav-list">${generateNavItems()}</ul></nav>
         <div class="footer-info">
@@ -419,7 +436,7 @@ function displayFooter() {
     appData.footer.phone
   }</a>
             </div>
-            <div class="footer-logo">ITPortfolio &copy; 2026</div>
+            <div class="footer-logo"><span class="gold">ITP</span>ortfolio <span class="white"> &copy; 2026</span></div>
         </div>
     </div>`;
 }

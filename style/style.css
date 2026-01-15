@@ -68,7 +68,6 @@ body {
 .about-wrapper,
 .about-page-wrapper,
 .about-container,
-.messages-wrapper,
 .contact-wrapper {
   max-width: 958px;
 }
@@ -729,6 +728,24 @@ body {
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.15);
   width: 300px;
   height: 80px;
+}
+
+.messages-section {
+  font-family: "League Spartan", sans-serif;
+  font-weight: 700;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 84px;
+}
+
+.message-items {
+  display: flex;
+  flex-direction: column;
+  list-style-type: none;
 }
 
 /* Podstrona Contact END */
