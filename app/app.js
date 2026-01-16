@@ -244,7 +244,7 @@ const templates = {
       Home: { title: appData.header.name, subtitle: appData.header.title },
       Projects: { title: "MY PROJECTS", subtitle: "Made with love" },
       About: { title: "ABOUT ME", subtitle: "IT'S A-ME!" },
-      Contact: { title: "CONTACT ME", subtitle: "Say hello" },
+      Contact: { title: "CONTACT ME", subtitle: "Say hello to me" },
       Messages: {
         title: "MESSAGES",
         subtitle: "Message from the interested person",
@@ -608,17 +608,6 @@ const forms = {
       [nameInput, emailInput, messageInput].forEach((el) =>
         el.classList.remove("input-error")
       );
-
-      // Success message
-      DOM.main.innerHTML = `
-        <div class="container">
-          <h2 class="section-title"">Message sent!</h2>
-          <p class="about-desc">Thank you, your message has been saved.</p>
-          <button class="contact-submit-btn"onclick="navigation.setPage('Home')">
-            Return to Home
-          </button>
-        </div>
-      `;
     }
   },
 

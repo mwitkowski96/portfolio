@@ -235,13 +235,14 @@ body {
   align-items: center;
 }
 
-.about-section .section-title {
-  margin-bottom: 1.063;
+.about-section .section-title,
+.about-text-section .section-title {
+  margin-bottom: 1.063rem;
 }
 
 .about-photo {
   width: 100%;
-  max-height: 311px;
+  max-height: 400px;
   border-radius: 1rem;
   object-fit: cover;
   margin-bottom: 4.063rem;
@@ -346,13 +347,16 @@ body {
   color: var(--white-color);
 }
 
+.projects-section {
+  padding-bottom: 41px;
+}
+
 .carousel-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
-  background-color: red;
 }
 
 .projects-list {
@@ -376,6 +380,8 @@ body {
   background-position: center;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   overflow: hidden;
+  color: var(--white-color);
+  font-family: "Roboto", sans-serif;
 }
 
 .project-details {
@@ -607,11 +613,11 @@ body.modal-open {
   padding: 15px 49px;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 400;
   color: #333;
   margin-top: 10px;
-  max-width: 240px;
   max-height: 60px;
+  font-size: 1rem;
 }
 
 .modal-submit-btn img {
@@ -630,12 +636,11 @@ body.modal-open {
   object-fit: cover;
   border-radius: 1rem;
   margin-bottom: 4rem;
-  margin-top: 84px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .about-text-section {
-  margin-bottom: 3.5rem;
+  margin-bottom: 4.063rem;
 }
 
 .about-text-section p {
@@ -667,7 +672,10 @@ body.modal-open {
   font-weight: 400;
   font-size: 1rem;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  margin-bottom: 84px;
+}
+
+.contact-section .section-title {
+  margin-bottom: 30px;
 }
 
 .contact-icon {
@@ -756,6 +764,8 @@ textarea.input-error {
   margin: 0 auto;
   padding: 0 16px;
   box-sizing: border-box;
+  font-family: "League Spartan", sans-serif;
+  font-weight: 700;
 }
 
 .messages-list {
@@ -767,7 +777,6 @@ textarea.input-error {
 }
 
 .message-items {
-  margin-bottom: 30px;
   border-bottom: 1px solid #ccc;
   padding-bottom: 10px;
   display: flex;
@@ -792,10 +801,6 @@ textarea.input-error {
 }
 
 @media (min-width: 768px) {
-  /* .wrapper {
-    padding: 84px 120px;
-  } */
-
   .nav-wrapper {
     padding-top: 37px;
   }
@@ -871,6 +876,10 @@ textarea.input-error {
     gap: 3rem 1.65rem;
   }
 
+  .projects-section {
+    padding-bottom: 84px;
+  }
+
   .projects-list {
     gap: 84px 41px;
   }
@@ -880,7 +889,6 @@ textarea.input-error {
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 40px;
-    padding: 0 120px;
   }
 
   .name-group,
