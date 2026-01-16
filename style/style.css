@@ -1,11 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=League+Gothic&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=League+Gothic&family=League+Spartan:wght@100..900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=League+Gothic&family=League+Spartan:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+}
+
+textarea {
+  resize: none;
 }
 
 /* Dodatkowe accessibilty */
@@ -28,6 +30,7 @@
   --active-item-color: #adb6c4;
   --nav-border-color: #f9f9f9;
   --form-project-details-color: #7e7e7e;
+  --error-color: rgba(255, 0, 0, 1);
 }
 
 body {
@@ -40,7 +43,7 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 500px;
+  height: 397px;
   margin: 0 auto;
   background-color: var(--main-color);
 }
@@ -61,14 +64,13 @@ body {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1920px;
   margin: 0 auto;
 }
 
 .about-wrapper,
 .about-page-wrapper,
-.about-container,
-.contact-wrapper {
+.about-container {
   max-width: 958px;
 }
 
@@ -136,7 +138,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
+  max-width: 1920px;
   padding: 10px 16px 26px 16px;
   margin: 0 auto;
 }
@@ -184,8 +186,8 @@ body {
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   height: 100%;
 }
 
@@ -318,6 +320,19 @@ body {
 /* O mnie END*/
 
 /* Projekty START*/
+
+.no-projects-msg {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-roboto);
+  font-size: 1.5rem;
+  color: var(--main-color);
+  font-weight: 700;
+  font-family: "League Spartan", sans-serif;
+  padding: 40px 0;
+}
+
 .projects-section {
   margin: 0 auto;
   font-family: "Roboto", sans-serif;
@@ -348,7 +363,7 @@ body {
   min-width: 300px;
   height: 460px;
   border-radius: 1rem;
-  background-image: url("/img/projectbgi.jpg");
+  background-image: url("../img/projectbgi.jpg");
   background-size: cover;
   background-position: center;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
@@ -467,6 +482,12 @@ body {
 
 /* Podstrona Projects START */
 
+input.input-error,
+textarea.input-error {
+  border-bottom: 2px solid var(--error-color);
+  color: var(--error-color);
+}
+
 .add-project-container {
   display: flex;
   flex-direction: column;
@@ -488,6 +509,9 @@ body {
   border-radius: 8px;
   border: none;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: "Roboto", sans-serif;
 }
 
 .delete-btn {
@@ -703,6 +727,7 @@ body {
   font-size: 1rem;
   color: #7e7e7e;
   outline: none;
+  font-weight: 400;
 }
 
 .message-group {
@@ -765,6 +790,7 @@ body {
 
   .about-container {
     gap: 0;
+    margin-bottom: 0;
   }
 
   .about-desc {
@@ -838,19 +864,23 @@ body {
   .contact-form {
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: center;
     width: 100%;
-    gap: 65px;
+    /* gap: 65px 110px; */
+    gap: 5rem;
   }
 
-  .name-group,
-  .email-group {
-    width: calc(50% - 65px);
+  .form-group {
+    min-width: 545px;
+    justify-content: space-around;
+  }
+
+  .message-group {
+    width: calc(100% - 2rem);
   }
 
   .form-submit-container {
-    margin: 65px auto 0 auto;
+    margin: 0 auto 0 auto;
   }
 
   /* Footer START */
@@ -862,7 +892,7 @@ body {
   .footer-container {
     width: 100%;
     margin: 0 auto;
-    max-width: 1260px;
+    max-width: 1920px;
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-end;
