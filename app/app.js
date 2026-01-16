@@ -1,9 +1,28 @@
-let appData = {
+// === CONSTANTS ===
+const CONFIG = {
+  CAROUSEL_ITEMS: 3,
+  MIN_NAME_LENGTH: 3,
+  MAX_NAME_LENGTH: 20,
+  MIN_TITLE_LENGTH: 3,
+  MAX_TITLE_LENGTH: 30,
+  MAX_MESSAGE_LENGTH: 100,
+};
+
+const ERROR_MESSAGES = {
+  NAME_SHORT: "The name must be at least 3 characters long.",
+  NAME_LONG: "The name must not exceed 20 characters.",
+  EMAIL_INVALID: "Please enter a valid email address.",
+  MESSAGE_EMPTY: "The message cannot be empty.",
+  MESSAGE_LONG: "The message must not exceed 100 characters.",
+  TITLE_SHORT: "The title must be at least 3 characters long.",
+  TITLE_LONG: "The title must not exceed 30 characters.",
+  TECH_EMPTY: "Please add some technologies.",
+};
+
+// === DATA ===
+const appData = {
   navItems: ["Home", "Projects", "About", "Contact", "Messages"],
-  header: {
-    name: "Marek Witkowski",
-    title: "web - designer",
-  },
+  header: { name: "Marek Witkowski", title: "web - designer" },
   about: {
     photo: "./img/IMG_0826.jpg",
     about:
@@ -41,690 +60,671 @@ let appData = {
       tech: ["HTML", "CSS", "JavaScript", "Figma", "Github"],
     },
   ],
-  footer: {
-    email: "marek.witkowski96@icloud.com",
-    phone: "+48 123 456 789",
-  },
+  footer: { email: "marek.witkowski96@icloud.com", phone: "+48 123 456 789" },
   messages: [
     {
       id: 1,
       name: "John Doe",
       email: "john.doe@example.com",
-      message: "Hello, I would like to know more about your services.",
+      message: "Hello...",
     },
     {
       id: 2,
       name: "Jane Smith",
       email: "jane.smith@example.com",
-      message: "I'm interested in your web design services.",
+      message: "I'm interested...",
     },
   ],
 };
 
-const navElement = document.getElementById("nav");
-const headerElement = document.getElementById("header");
-const mainElement = document.getElementById("main");
-const footerElement = document.getElementById("footer");
+// === STATE ===
+const state = {
+  currentPage: "Home",
+  menuIsOpen: false,
+  carouselIndex: 0,
+};
 
-let currentPage = "Home";
-let menuIsOpen = false;
-let carouselIndex = 0;
+// === DOM REFS ===
+const DOM = {
+  nav: document.getElementById("nav"),
+  header: document.getElementById("header"),
+  main: document.getElementById("main"),
+  footer: document.getElementById("footer"),
+};
 
-// --- LOGIKA POMOCNICZA ---
+// === UTILITIES ===
+const utils = {
+  validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  },
 
-function getVisibleProjects() {
-  const count = appData.projects.length;
-  if (count === 0) return [];
-  let displayed = [];
-  const toShow = Math.min(3, count);
-  for (let i = 0; i < toShow; i++) {
-    const index = (carouselIndex + i) % count;
-    displayed.push(appData.projects[index]);
-  }
-  return displayed;
-}
+  getVisibleProjects() {
+    const count = appData.projects.length;
+    if (count === 0) return [];
+    const toShow = Math.min(CONFIG.CAROUSEL_ITEMS, count);
+    return Array.from(
+      { length: toShow },
+      (_, i) => appData.projects[(state.carouselIndex + i) % count]
+    );
+  },
 
-function generateNavItems() {
-  return appData.navItems
-    .map(
-      (navItem) => `
-      <li>
-        <button class="nav-btn" data-page="${navItem}"> 
-           ${navItem}
-        </button>
-      </li>`
-    )
-    .join("");
-}
+  formatTech(input) {
+    return input
+      .split(/[-,\s]+/)
+      .map((t) => t.trim())
+      .filter((t) => t);
+  },
 
-function createProjectCardElement(project, showDelete = false) {
-  const card = document.createElement("div");
-  card.classList.add("project-card");
+  setFieldError(fieldId, errorId, message) {
+    const field = document.getElementById(fieldId);
+    const error = document.getElementById(errorId);
+    if (!field || !error) return;
 
-  if (showDelete) {
-    const deleteBtn = document.createElement("button");
-    deleteBtn.classList.add("delete-btn");
-    deleteBtn.dataset.id = project.id;
+    field.classList.toggle("input-error", !!message);
+    error.textContent = message;
+  },
+};
 
-    const deleteIcon = document.createElement("img");
-    deleteIcon.src = "./img/delete.png";
-    deleteIcon.alt = "delete";
+// === VALIDATORS ===
+const validators = {
+  name(value) {
+    value = value.trim();
+    if (value.length < CONFIG.MIN_NAME_LENGTH) return ERROR_MESSAGES.NAME_SHORT;
+    if (value.length > CONFIG.MAX_NAME_LENGTH) return ERROR_MESSAGES.NAME_LONG;
+    return null;
+  },
 
-    deleteBtn.append(deleteIcon);
+  email(value) {
+    if (!utils.validateEmail(value.trim())) return ERROR_MESSAGES.EMAIL_INVALID;
+    return null;
+  },
 
-    deleteBtn.addEventListener("click", () => deleteProject(project.id));
+  message(value) {
+    value = value.trim();
+    if (!value) return ERROR_MESSAGES.MESSAGE_EMPTY;
+    if (value.length > CONFIG.MAX_MESSAGE_LENGTH)
+      return ERROR_MESSAGES.MESSAGE_LONG;
+    return null;
+  },
 
-    card.append(deleteBtn);
-  }
+  title(value) {
+    value = value.trim();
+    if (value.length < CONFIG.MIN_TITLE_LENGTH)
+      return ERROR_MESSAGES.TITLE_SHORT;
+    if (value.length > CONFIG.MAX_TITLE_LENGTH)
+      return ERROR_MESSAGES.TITLE_LONG;
+    return null;
+  },
 
-  const details = document.createElement("div");
-  details.classList.add("project-details");
+  technologies(value) {
+    if (!value.trim()) return ERROR_MESSAGES.TECH_EMPTY;
+    return null;
+  },
+};
 
-  const title = document.createElement("h3");
-  title.classList.add("project-title");
-  title.textContent = project.title;
+// === TEMPLATES / HTML ===
+const templates = {
+  navButton(item, isActive) {
+    return `<button class="nav-btn ${
+      isActive ? "active" : ""
+    }" data-page="${item}">${item}</button>`;
+  },
 
-  const techList = document.createElement("ul");
-  techList.classList.add("project-card-tech-list");
+  skillDots(filled) {
+    return Array.from(
+      { length: 5 },
+      (_, i) => `<span class="${i < filled ? "filled" : "empty"}"></span>`
+    ).join("");
+  },
 
-  project.tech.forEach((techName) => {
-    const li = document.createElement("li");
-    li.textContent = techName;
-    techList.append(li);
-  });
+  projectCard(project, showDelete = false) {
+    const deleteBtn = showDelete
+      ? `<button class="delete-btn" data-id="${project.id}"><img src="./img/delete.png" alt="delete"></button>`
+      : "";
 
-  details.append(title, techList);
-  card.append(details);
+    const techList = project.tech.map((t) => `<li>${t}</li>`).join("");
 
-  return card;
-}
+    return `
+      ${deleteBtn}
+      <div class="project-details">
+        <h3 class="project-title">${project.title}</h3>
+        <ul class="project-card-tech-list">${techList}</ul>
+      </div>
+    `;
+  },
 
-function getHomeAboutSectionHTML() {
-  const skills = appData.about.skills
-    .map((skill) => {
-      let dots = "";
-      for (let i = 0; i < 5; i++) {
-        dots += `<span class="${
-          i < skill.yearsOfExperience ? "filled" : "empty"
-        }"></span>`;
-      }
-      return `
+  skillItem(skill) {
+    return `
       <div class="skill-item">
         <img src="${skill.img}" alt="${skill.name}" class="skill-img">
         <div class="skill-info">
           <div class="skill-row">
             <span class="skill-name">${skill.name}</span>
-            <div class="dots-container">${dots}</div>
-            <span class="experience-years">${skill.yearsOfExperience} years</span>
+            <div class="dots-container">${templates.skillDots(
+              skill.yearsOfExperience
+            )}</div>
+            <span class="experience-years">${
+              skill.yearsOfExperience
+            } years</span>
           </div>
         </div>
-      </div>`;
-    })
-    .join("");
-
-  return `
-    <section id="about" class="about-section container">
-      <div class="about-container wrapper">
-          <img src="${appData.about.photo}" class="about-photo">
-          <h2 class="about-heading heading">About me</h2>
-          <p class="about-desc">${appData.about.about}</p>
-          <div class="skills-container">
-            <h2 class="skills-heading heading">My Skills</h2>
-            <div class="skills-list">${skills}</div>
-          </div>
       </div>
-    </section>`;
-}
+    `;
+  },
 
-function getAboutPageHTML() {
-  return `
-    <section class="about-page-container container">
-      <div class="about-page-wrapper wrapper">
-         <img src="${appData.about.photo}" alt="Profile" class="about-hero-img">
-         <div class="about-text-section"><h2>My background</h2><p>${appData.about.myBackground}</p></div>
-         <div class="about-text-section"><h2>My hobbies and interests</h2><p>${appData.about.myHobbies}</p></div>
-         <div class="contact-redirect-container">
-            <button id="goToContactBtn" class="contact-redirect-btn">
-              <img src="./img/strzalka.png" class="contact-icon">Contact me
-            </button>
-         </div>
-      </div>
-    </section>`;
-}
-
-function getContactPageHTML() {
-  return `
-    <section class="contact-section container">
-      <div class="contact-wrapper wrapper">
-        <h2 class="contact-main-heading">Contact me</h2>
-        <form id="contactForm" class="contact-form">
-          <div class="form-group name-group">
-            <label for="contactName">Name</label>
-            <input type="text" name="contactName" id="contactName" placeholder="Your name">
-            <span id="nameError" class="error-msg"></span>
-          </div>
-          <div class="form-group email-group">
-            <label for="contactEmail">Email</label>
-            <input type="email" name="contactEmail" id="contactEmail" placeholder="email@example.com">
-            <span id="emailError" class="error-msg"></span>
-          </div>
-          <div class="form-group message-group">
-            <label for="contactMessage">Message</label>
-            <textarea name="contactMessage" id="contactMessage" placeholder="Hello, my name is. . ."></textarea>
-            <span id="msgError" class="error-msg"></span>
-          </div>
-          <div class="form-submit-container">
-            <button type="submit" class="contact-submit-btn">Send message</button>
-          </div>
-        </form>
-      </div>
-    </section>`;
-}
-
-function display() {
-  updateActiveNavState();
-  displayHeader();
-
-  mainElement.replaceChildren();
-
-  switch (currentPage) {
-    case "Home":
-      mainElement.innerHTML = getHomeAboutSectionHTML();
-
-      const carouselSection = document.createElement("section");
-      carouselSection.id = "projects";
-      carouselSection.classList.add("projects-section");
-
-      const visibleProjects = getVisibleProjects();
-
-      if (visibleProjects.length === 0) {
-        carouselSection.innerHTML = `<div class="container" style="text-align:center; padding: 50px;"><span class="no-projects-msg">There are no projects to display</span></div>`;
-      } else {
-        const wrapper = document.createElement("div");
-        wrapper.classList.add("projects-section-wrapper", "wrapper");
-
-        const box = document.createElement("div");
-        box.classList.add("carousel-box");
-
-        const list = document.createElement("div");
-        list.classList.add("projects-list");
-
-        visibleProjects.forEach((p) =>
-          list.append(createProjectCardElement(p, false))
-        );
-
-        box.append(list);
-
-        if (appData.projects.length > 3) {
-          const controls = document.createElement("div");
-          controls.classList.add("carousel-controls");
-          controls.innerHTML = `
-                <button class="arrow prev" id="prevBtn"><img src="./img/strzalka.png" class="arrow-icon arrow-prev"></button>
-                <button class="arrow next" id="nextBtn"><img src="./img/strzalka.png" class="arrow-icon arrow-next"></button>
-             `;
-          box.append(controls);
-        }
-        wrapper.append(box);
-        carouselSection.append(wrapper);
-      }
-      mainElement.append(carouselSection);
-      break;
-
-    case "Projects":
-      const projSection = document.createElement("section");
-      projSection.classList.add("projects-section", "container");
-
-      const projWrapper = document.createElement("div");
-      projWrapper.classList.add("projects-wrapper", "wrapper");
-
-      const addContainer = document.createElement("div");
-      addContainer.classList.add("add-project-container");
-      addContainer.innerHTML = `
-          <button id="addProjectBtn" class="add-project-btn">
-            <img src="./img/plus.png" class="add-icon"><span>Add project</span>
-          </button>`;
-
-      const projList = document.createElement("div");
-      projList.classList.add("projects-list");
-
-      if (appData.projects.length === 0) {
-        projList.innerHTML = `<span class="no-projects-msg">There are no projects to display</span>`;
-      } else {
-        appData.projects.forEach((p) => {
-          projList.append(createProjectCardElement(p, true));
-        });
-      }
-
-      projWrapper.append(addContainer, projList);
-      projSection.append(projWrapper);
-      mainElement.append(projSection);
-      break;
-
-    case "About":
-      mainElement.innerHTML = getAboutPageHTML();
-      break;
-
-    case "Contact":
-      mainElement.innerHTML = getContactPageHTML();
-      break;
-
-    case "Messages":
-      const msgSection = document.createElement("section");
-      msgSection.classList.add("messages-section", "container");
-      const msgWrapper = document.createElement("div");
-      msgWrapper.classList.add("messages-wrapper", "wrapper");
-      const msgList = document.createElement("div");
-      msgList.classList.add("messages-list");
-
-      if (appData.messages.length === 0) {
-        msgList.innerHTML = "<p>No messages yet.</p>";
-      } else {
-        appData.messages.forEach((m) => {
-          const ul = document.createElement("ul");
-          ul.classList.add("message-items");
-          ul.style.cssText =
-            "margin-bottom: 30px; border-bottom: 1px solid #ccc; padding-bottom: 10px;";
-
-          const createRow = (label, text) => {
-            const li = document.createElement("li");
-            li.classList.add("message-row");
-            const strong = document.createElement("strong");
-            strong.textContent = label + ": ";
-            li.append(strong, document.createTextNode(text));
-            return li;
-          };
-
-          ul.append(
-            createRow("Name", m.name),
-            createRow("Email", m.email),
-            createRow("Message", m.message)
-          );
-          msgList.append(ul);
-        });
-      }
-      msgWrapper.append(msgList);
-      msgSection.append(msgWrapper);
-      mainElement.append(msgSection);
-      break;
-  }
-
-  attachPageListeners();
-}
-
-function init() {
-  renderNav();
-  renderFooter();
-  attachGlobalNavListeners();
-  display();
-}
-
-function renderNav() {
-  navElement.innerHTML = `
-    <div class="nav-wrapper">
-      <div class="logo">
+  nav() {
+    return `
+      <div class="nav-wrapper">
+        <div class="logo">
           <span class="logo-mobile gold">ITP</span>
           <span class="logo-desktop gold">ITP<span class="grey">ortfolio</span></span>
-      </div>
-      <nav class="nav-list-container">
-        <ul class="nav-list">${generateNavItems()}</ul>
-      </nav>
-      <button class="hamburger">
-          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      </button>
-    </div>`;
-}
-
-function renderFooter() {
-  footerElement.innerHTML = `
-    <div class="footer-container">
-        <nav class="footer-nav"><ul class="footer-nav-list">${generateNavItems()}</ul></nav>
-        <div class="footer-info">
-            <div class="footer-contact">
-                <a href="mailto:${appData.footer.email}">${
-    appData.footer.email
-  }</a>
-                <a href="tel:${appData.footer.phone}">${
-    appData.footer.phone
-  }</a>
-            </div>
-            <div class="footer-logo"><span class="gold">ITP</span>ortfolio <span class="white"> &copy; 2026</span></div>
         </div>
-    </div>`;
-}
-
-function displayHeader() {
-  const headerContentMap = {
-    Home: { title: appData.header.name, subtitle: appData.header.title },
-    Projects: { title: "MY PROJECTS", subtitle: "Made with love" },
-    About: { title: "ABOUT ME", subtitle: `IT'S A-ME!` },
-    Contact: { title: "CONTACT ME", subtitle: "Say hello" },
-    Messages: {
-      title: "MESSAGES",
-      subtitle: "Message from the interested person",
-    },
-  };
-  const current = headerContentMap[currentPage] || headerContentMap["Home"];
-  headerElement.innerHTML = `
-    <div class="header container">
-      <h1 class="header-heading">${current.title}</h1>
-      <span class="header-subtitle">${current.subtitle}</span>
-    </div>`;
-}
-
-function updateActiveNavState() {
-  const allNavBtns = document.querySelectorAll(".nav-btn");
-  allNavBtns.forEach((btn) => {
-    if (btn.dataset.page === currentPage) {
-      btn.classList.add("active");
-    } else {
-      btn.classList.remove("active");
-    }
-  });
-}
-
-function attachGlobalNavListeners() {
-  document.querySelectorAll(".nav-btn").forEach((btn) => {
-    // MODERN: addEventListener
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      setPage(btn.dataset.page);
-    });
-  });
-
-  const burger = document.querySelector(".hamburger");
-  if (burger) {
-    burger.addEventListener("click", toggleMenu);
-  }
-}
-
-function attachPageListeners() {
-  if (currentPage === "Home" && appData.projects.length > 3) {
-    const prev = document.getElementById("prevBtn");
-    const next = document.getElementById("nextBtn");
-    if (prev) prev.addEventListener("click", () => moveCarousel(-1));
-    if (next) next.addEventListener("click", () => moveCarousel(1));
-  }
-
-  if (currentPage === "About") {
-    const btn = document.getElementById("goToContactBtn");
-    if (btn) btn.addEventListener("click", () => setPage("Contact"));
-  }
-
-  if (currentPage === "Projects") {
-    const addBtn = document.getElementById("addProjectBtn");
-    if (addBtn) addBtn.addEventListener("click", openAddProjectModal);
-  }
-
-  if (currentPage === "Contact") {
-    const form = document.getElementById("contactForm");
-    const inputs = form.querySelectorAll("input, textarea");
-    inputs.forEach((input) => {
-      input.addEventListener("input", validateContactFields);
-    });
-    form.addEventListener("submit", handleContactSubmit);
-  }
-}
-
-function toggleMenu() {
-  menuIsOpen = !menuIsOpen;
-  const navContainer = document.querySelector(".nav-list-container");
-  const burger = document.querySelector(".hamburger");
-
-  if (menuIsOpen) {
-    navContainer.classList.add("show");
-    burger.classList.add("open");
-  } else {
-    navContainer.classList.remove("show");
-    burger.classList.remove("open");
-  }
-}
-
-function setPage(page) {
-  currentPage = page;
-  if (menuIsOpen) toggleMenu();
-  carouselIndex = 0;
-  display();
-}
-
-function moveCarousel(dir) {
-  carouselIndex =
-    (carouselIndex + dir + appData.projects.length) % appData.projects.length;
-  display();
-}
-
-function deleteProject(id) {
-  appData.projects = appData.projects.filter((p) => p.id !== id);
-  display();
-}
-
-const contactValidators = {
-  name: (val) => {
-    if (val.length < 3) return "The name must be at least 3 characters long.";
-    if (val.length > 20) return "The name must not exceed 20 characters.";
-    return true;
+        <nav class="nav-list-container ${state.menuIsOpen ? "show" : ""}">
+          <ul class="nav-list">
+            ${appData.navItems
+              .map((item) =>
+                templates.navButton(item, state.currentPage === item)
+              )
+              .join("")}
+          </ul>
+        </nav>
+        <button class="hamburger ${
+          state.menuIsOpen ? "open" : ""
+        }" aria-label="Toggle menu">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </button>
+      </div>
+    `;
   },
-  email: (val) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(val)) return "Please enter a valid email address.";
-    return true;
+
+  header() {
+    const headerContentMap = {
+      Home: { title: appData.header.name, subtitle: appData.header.title },
+      Projects: { title: "MY PROJECTS", subtitle: "Made with love" },
+      About: { title: "ABOUT ME", subtitle: "IT'S A-ME!" },
+      Contact: { title: "CONTACT ME", subtitle: "Say hello" },
+      Messages: {
+        title: "MESSAGES",
+        subtitle: "Message from the interested person",
+      },
+    };
+    const current =
+      headerContentMap[state.currentPage] || headerContentMap["Home"];
+    return `
+      <div class="header container">
+        <h1 class="header-heading">${current.title}</h1>
+        <span class="header-subtitle">${current.subtitle}</span>
+      </div>
+    `;
   },
-  message: (val) => {
-    if (val.length === 0) return "The message cannot be empty.";
-    if (val.length > 100) return "The message must not exceed 100 characters.";
-    return true;
+
+  footer() {
+    return `
+      <div class="footer-container">
+        <nav class="footer-nav">
+          <ul class="footer-nav-list">
+            ${appData.navItems
+              .map((item) =>
+                templates.navButton(item, state.currentPage === item)
+              )
+              .join("")}
+          </ul>
+        </nav>
+        <div class="footer-info">
+          <div class="footer-contact">
+            <a href="mailto:${appData.footer.email}">${appData.footer.email}</a>
+            <a href="tel:${appData.footer.phone}">${appData.footer.phone}</a>
+          </div>
+          <div class="footer-logo">
+            <span class="gold">ITP</span>ortfolio <span class="white">&copy; 2026</span>
+          </div>
+        </div>
+      </div>
+    `;
   },
 };
 
-function validateField(inputElement, errorElement, ruleName) {
-  const value = inputElement.value.trim();
-  const result = contactValidators[ruleName](value);
+// === PAGE RENDERERS ===
+const pages = {
+  home() {
+    const visibleProjects = utils.getVisibleProjects();
+    const hasCarousel = appData.projects.length > CONFIG.CAROUSEL_ITEMS;
 
-  if (result === true) {
-    errorElement.innerText = "";
-    inputElement.classList.remove("input-error");
-    return true;
-  } else {
-    errorElement.innerText = result;
-    inputElement.classList.add("input-error");
-    return false;
-  }
-}
+    return `
+      <section id="about" class="about-section container">
+        <div class="about-container about-wrapper wrapper">
+          <img src="${appData.about.photo}" alt="Profile" class="about-photo">
+          <h2 class="section-title">About me</h2>
+          <p class="about-desc">${appData.about.about}</p>
+          <div class="skills-container">
+            <h2 class="section-title">My Skills</h2>
+            <div class="skills-list">
+              ${appData.about.skills
+                .map((skill) => templates.skillItem(skill))
+                .join("")}
+            </div>
+          </div>
+        </div>
+      </section>
 
-function validateContactFields(e) {
-  const target = e.target;
-  if (target.id === "contactName")
-    validateField(target, document.getElementById("nameError"), "name");
-  if (target.id === "contactEmail")
-    validateField(target, document.getElementById("emailError"), "email");
-  if (target.id === "contactMessage")
-    validateField(target, document.getElementById("msgError"), "message");
-}
+      <section id="projects" class="projects-section">
+        <div class="projects-section-wrapper">
+          <div class="carousel-box">
+            <div class="projects-list">
+              ${
+                visibleProjects.length > 0
+                  ? visibleProjects
+                      .map(
+                        (p) =>
+                          `<div class="project-card">${templates.projectCard(
+                            p,
+                            false
+                          )}</div>`
+                      )
+                      .join("")
+                  : '<p class="no-projects-msg">There are no projects to display</p>'
+              }
+            </div>
+            ${
+              hasCarousel
+                ? `
+              <div class="carousel-controls">
+                <button class="arrow prev" id="prevBtn">
+                  <img src="./img/strzalka.png" class="arrow-icon arrow-prev" alt="previous">
+                </button>
+                <button class="arrow next" id="nextBtn">
+                  <img src="./img/strzalka.png" class="arrow-icon arrow-next" alt="next">
+                </button>
+              </div>
+            `
+                : ""
+            }
+          </div>
+        </div>
+      </section>
+    `;
+  },
 
-function handleContactSubmit(e) {
-  e.preventDefault();
-  const form = e.target;
-  const nameInp = document.getElementById("contactName");
-  const emailInp = document.getElementById("contactEmail");
-  const msgInp = document.getElementById("contactMessage");
+  projects() {
+    return `
+      <section class="projects-section container">
+        <div class="about wrapper">
+          <div class="add-project-container">
+            <button id="addProjectBtn" class="add-project-btn">
+              <img src="./img/plus.png" alt="plus">
+              <span>Add project</span>
+            </button>
+          </div>
+          <div class="projects-list">
+            ${
+              appData.projects.length > 0
+                ? appData.projects
+                    .map(
+                      (p) =>
+                        `<div class="project-card">${templates.projectCard(
+                          p,
+                          true
+                        )}</div>`
+                    )
+                    .join("")
+                : "<p>There are no projects to display</p>"
+            }
+          </div>
+        </div>
+      </section>
+    `;
+  },
 
-  const isNameValid = validateField(
-    nameInp,
-    document.getElementById("nameError"),
-    "name"
-  );
-  const isEmailValid = validateField(
-    emailInp,
-    document.getElementById("emailError"),
-    "email"
-  );
-  const isMsgValid = validateField(
-    msgInp,
-    document.getElementById("msgError"),
-    "message"
-  );
+  about() {
+    return `
+      <section class="about-page-container container">
+        <div class="about-page-wrapper wrapper">
+          <img src="${appData.about.photo}" alt="Profile" class="about-hero-img">
+          <div class="about-text-section">
+            <h2 class="section-title">My background</h2>
+            <p>${appData.about.myBackground}</p>
+          </div>
+          <div class="about-text-section">
+            <h2 class="section-title">My hobbies and interests</h2>
+            <p>${appData.about.myHobbies}</p>
+          </div>
+          <div class="contact-redirect-container">
+            <button id="goToContactBtn" class="contact-redirect-btn">
+              <img class="contact-icon" src="./img/strzalka.png" alt="Arrow">Contact me
+            </button>
+          </div>
+        </div>
+      </section>
+    `;
+  },
 
-  if (isNameValid && isEmailValid && isMsgValid) {
-    appData.messages.push({
-      id: Date.now(),
-      name: nameInp.value.trim(),
-      email: emailInp.value.trim(),
-      message: msgInp.value.trim(),
+  contact() {
+    return `
+      <section class="contact-section container">
+        <div class="contact-wrapper wrapper">
+          <h2 class="section-title">Contact me</h2>
+          <form id="contactForm" class="contact-form" novalidate>
+            <div class="form-group name-group">
+              <label for="contactName">Name</label>
+              <input type="text" id="contactName" placeholder="Your name">
+              <span id="nameError" class="error-msg"></span>
+            </div>
+            <div class="form-group email-group">
+              <label for="contactEmail">Email</label>
+              <input type="email" id="contactEmail" placeholder="email@example.com">
+              <span id="emailError" class="error-msg"></span>
+            </div>
+            <div class="form-group message-group">
+              <label for="contactMessage">Message</label>
+              <textarea id="contactMessage" placeholder="Hello, my name is..."></textarea>
+              <span id="msgError" class="error-msg"></span>
+            </div>
+            <div class="form-submit-container">
+              <button type="submit" class="contact-submit-btn">Send message</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    `;
+  },
+
+  messages() {
+    return `
+      <section class="messages-section container">
+        <div class="messages-wrapper wrapper">
+          <div class="messages-list">
+            ${
+              appData.messages.length > 0
+                ? appData.messages
+                    .map(
+                      (m) => `
+                  <ul class="message-items">
+                    <li class="message-row"><strong>Name:</strong> ${m.name}</li>
+                    <li class="message-row"><strong>Email:</strong> ${m.email}</li>
+                    <li class="message-row"><strong>Message:</strong> ${m.message}</li>
+                  </ul>
+                `
+                    )
+                    .join("")
+                : "<p>No messages yet.</p>"
+            }
+          </div>
+        </div>
+      </section>
+    `;
+  },
+};
+
+// === EVENT DELEGATION ===
+const eventManager = {
+  init() {
+    // Global nav & hamburger
+    document.addEventListener("click", (e) => {
+      const navBtn = e.target.closest(".nav-btn");
+      if (navBtn) {
+        e.preventDefault();
+        navigation.setPage(navBtn.dataset.page);
+        return;
+      }
+
+      const hamburger = e.target.closest(".hamburger");
+      if (hamburger) {
+        navigation.toggleMenu();
+        return;
+      }
+
+      const prevBtn = e.target.closest("#prevBtn");
+      if (prevBtn) {
+        carousel.prev();
+        return;
+      }
+
+      const nextBtn = e.target.closest("#nextBtn");
+      if (nextBtn) {
+        carousel.next();
+        return;
+      }
+
+      const deleteBtn = e.target.closest(".delete-btn");
+      if (deleteBtn) {
+        projects.delete(Number(deleteBtn.dataset.id));
+        return;
+      }
+
+      const addBtn = e.target.closest("#addProjectBtn");
+      if (addBtn) {
+        modal.open();
+        return;
+      }
+
+      const contactBtn = e.target.closest("#goToContactBtn");
+      if (contactBtn) {
+        navigation.setPage("Contact");
+        return;
+      }
+
+      const closeModal = e.target.closest("#closeModal");
+      if (closeModal) {
+        modal.close();
+        return;
+      }
     });
 
-    form.reset();
-    [nameInp, emailInp, msgInp].forEach((el) =>
-      el.classList.remove("input-error")
-    );
-    alert("Message sent successfully!");
-  }
-}
+    // Form submissions
+    document.addEventListener("submit", (e) => {
+      if (e.target.id === "contactForm") {
+        e.preventDefault();
+        forms.submitContact(e.target);
+      }
+      if (e.target.id === "addProjectForm") {
+        e.preventDefault();
+        forms.submitProject(e.target);
+      }
+    });
 
-function openAddProjectModal() {
-  const overlay = document.createElement("div");
-  overlay.id = "modalOverlay";
-  overlay.classList.add("modal-overlay");
+    // Real-time validation
+    document.addEventListener("input", (e) => {
+      const contactFields = {
+        contactName: "name",
+        contactEmail: "email",
+        contactMessage: "message",
+        newTitle: "title",
+        newTech: "technologies",
+      };
 
-  const windowDiv = document.createElement("div");
-  windowDiv.classList.add("modal-window");
+      if (contactFields[e.target.id]) {
+        const validatorName = contactFields[e.target.id];
+        const error = validators[validatorName](e.target.value);
+        const errorId = {
+          name: "nameError",
+          email: "emailError",
+          message: "msgError",
+          title: "titleError",
+          technologies: "techError",
+        }[validatorName];
+        utils.setFieldError(e.target.id, errorId, error || "");
+      }
+    });
+  },
+};
 
-  const closeBtn = document.createElement("button");
-  closeBtn.id = "closeModal";
-  closeBtn.classList.add("close-x");
-  closeBtn.innerHTML = "&times;";
+// === CAROUSEL ===
+const carousel = {
+  prev() {
+    state.carouselIndex =
+      (state.carouselIndex - 1 + appData.projects.length) %
+      appData.projects.length;
+    render.main();
+  },
 
-  closeBtn.addEventListener("click", closeModal);
+  next() {
+    state.carouselIndex = (state.carouselIndex + 1) % appData.projects.length;
+    render.main();
+  },
+};
 
-  const form = document.createElement("form");
-  form.id = "addProjectForm";
-  form.classList.add("modal-form");
+// === PROJECTS ===
+const projects = {
+  delete(id) {
+    appData.projects = appData.projects.filter((p) => p.id !== id);
+    render.main();
+  },
 
-  const createInputRow = (labelText, inputId, placeholder = "") => {
-    const row = document.createElement("div");
-    row.classList.add("form-row");
-
-    const label = document.createElement("label");
-    label.setAttribute("for", inputId);
-    label.textContent = labelText;
-
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("input-wrapper");
-
-    const input = document.createElement("input");
-    input.type = "text";
-    input.id = inputId;
-    if (placeholder) input.placeholder = placeholder;
-
-    input.addEventListener("input", validateModalFields);
-
-    const errorSpan = document.createElement("span");
-    errorSpan.id = inputId === "newTitle" ? "titleError" : "techError";
-    errorSpan.classList.add("error-msg");
-
-    wrapper.append(input, errorSpan);
-    row.append(label, wrapper);
-    return row;
-  };
-
-  const titleRow = createInputRow("Project title", "newTitle");
-  const techRow = createInputRow("Technologies", "newTech", "HTML, CSS, JS");
-
-  const submitBtn = document.createElement("button");
-  submitBtn.type = "submit";
-  submitBtn.classList.add("modal-submit-btn");
-
-  const btnIcon = document.createElement("img");
-  btnIcon.src = "./img/plus.png";
-  btnIcon.alt = "add";
-
-  submitBtn.append(btnIcon, document.createTextNode(" Add project"));
-
-  form.append(titleRow, techRow, submitBtn);
-
-  form.addEventListener("submit", handleAddProject);
-
-  windowDiv.append(closeBtn, form);
-  overlay.append(windowDiv);
-
-  document.body.append(overlay);
-  document.body.style.overflow = "hidden";
-}
-
-function validateModalFields() {
-  const titleInp = document.getElementById("newTitle");
-  const techInp = document.getElementById("newTech");
-  const titleErr = document.getElementById("titleError");
-  const techErr = document.getElementById("techError");
-
-  let isValid = true;
-
-  if (titleInp.value.trim().length > 0) {
-    if (titleInp.value.trim().length < 3) {
-      titleErr.innerText = "The title must be at least 3 characters long.";
-      titleInp.classList.add("input-error");
-      isValid = false;
-    } else if (titleInp.value.trim().length > 30) {
-      titleErr.innerText = "The title must not exceed 30 characters.";
-      titleInp.classList.add("input-error");
-      isValid = false;
-    } else {
-      titleErr.innerText = "";
-      titleInp.classList.remove("input-error");
-    }
-  }
-
-  if (techInp.value.trim().length > 0) {
-    techErr.innerText = "";
-    techInp.classList.remove("input-error");
-  }
-  return isValid;
-}
-
-function handleAddProject(e) {
-  e.preventDefault();
-  const titleInp = document.getElementById("newTitle");
-  const techInp = document.getElementById("newTech");
-  const titleVal = titleInp.value.trim();
-  const techVal = techInp.value.trim();
-
-  let canSubmit = true;
-
-  if (titleVal.length < 3) {
-    document.getElementById("titleError").innerText =
-      "The title must be at least 3 characters long.";
-    titleInp.classList.add("input-error");
-    canSubmit = false;
-  } else if (titleVal.length > 30) {
-    document.getElementById("titleError").innerText =
-      "The title must not exceed 30 characters.";
-    titleInp.classList.add("input-error");
-    canSubmit = false;
-  }
-
-  if (techVal.length === 0) {
-    document.getElementById("techError").innerText =
-      "Please add some technologies.";
-    techInp.classList.add("input-error");
-    canSubmit = false;
-  }
-
-  if (canSubmit) {
+  add(title, tech) {
     appData.projects.push({
       id: Date.now(),
-      title: titleVal,
-      tech: techVal
-        .split(",")
-        .map((t) => t.trim())
-        .filter((t) => t !== ""),
+      title,
+      tech: utils.formatTech(tech),
     });
-    closeModal();
-    display();
-  }
-}
+  },
+};
 
-function closeModal() {
-  const modal = document.getElementById("modalOverlay");
-  if (modal) modal.remove();
-  document.body.style.overflow = "auto";
-}
+// === FORMS ===
+const forms = {
+  submitContact(form) {
+    const nameInput = document.getElementById("contactName");
+    const emailInput = document.getElementById("contactEmail");
+    const messageInput = document.getElementById("contactMessage");
 
-init();
+    const nameError = validators.name(nameInput.value);
+    const emailError = validators.email(emailInput.value);
+    const messageError = validators.message(messageInput.value);
+
+    utils.setFieldError("contactName", "nameError", nameError || "");
+    utils.setFieldError("contactEmail", "emailError", emailError || "");
+    utils.setFieldError("contactMessage", "msgError", messageError || "");
+
+    if (!nameError && !emailError && !messageError) {
+      appData.messages.push({
+        id: Date.now(),
+        name: nameInput.value.trim(),
+        email: emailInput.value.trim(),
+        message: messageInput.value.trim(),
+      });
+
+      form.reset();
+      [nameInput, emailInput, messageInput].forEach((el) =>
+        el.classList.remove("input-error")
+      );
+
+      // Success message
+      DOM.main.innerHTML = `
+        <div class="container">
+          <h2 class="section-title"">Message sent!</h2>
+          <p class="about-desc">Thank you, your message has been saved.</p>
+          <button class="contact-submit-btn"onclick="navigation.setPage('Home')">
+            Return to Home
+          </button>
+        </div>
+      `;
+    }
+  },
+
+  submitProject(form) {
+    const titleInput = document.getElementById("newTitle");
+    const techInput = document.getElementById("newTech");
+
+    const titleError = validators.title(titleInput.value);
+    const techError = validators.technologies(techInput.value);
+
+    utils.setFieldError("newTitle", "titleError", titleError || "");
+    utils.setFieldError("newTech", "techError", techError || "");
+
+    if (!titleError && !techError) {
+      projects.add(titleInput.value, techInput.value);
+      modal.close();
+      render.main();
+    }
+  },
+};
+
+// === MODAL ===
+const modal = {
+  open() {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      `
+      <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-window">
+          <button id="closeModal" class="close-x">&times;</button>
+          <form id="addProjectForm" class="modal-form">
+            <div class="form-row">
+              <label for="newTitle">Project title</label>
+              <div class="input-wrapper">
+                <input type="text" id="newTitle" placeholder="Project title">
+                <span id="titleError" class="error-msg"></span>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="newTech">Technologies</label>
+              <div class="input-wrapper">
+                <input type="text" id="newTech" placeholder="HTML, CSS, JS">
+                <span id="techError" class="error-msg"></span>
+              </div>
+            </div>
+            <button type="submit" class="modal-submit-btn">
+              <img src="./img/plus.png" alt="plus"> Add project
+            </button>
+          </form>
+        </div>
+      </div>
+    `
+    );
+    document.body.style.overflow = "hidden";
+  },
+
+  close() {
+    document.getElementById("modalOverlay")?.remove();
+    document.body.style.overflow = "auto";
+  },
+};
+
+// === NAVIGATION ===
+const navigation = {
+  setPage(page) {
+    state.currentPage = page;
+    state.menuIsOpen = false;
+    state.carouselIndex = 0;
+    render.all();
+  },
+
+  toggleMenu() {
+    state.menuIsOpen = !state.menuIsOpen;
+    render.nav();
+  },
+};
+
+// === RENDER ===
+const render = {
+  nav() {
+    DOM.nav.innerHTML = templates.nav();
+  },
+
+  header() {
+    DOM.header.innerHTML = templates.header();
+  },
+
+  footer() {
+    DOM.footer.innerHTML = templates.footer();
+  },
+
+  main() {
+    const pageRenderer = pages[state.currentPage.toLowerCase()];
+    if (pageRenderer) {
+      DOM.main.innerHTML = pageRenderer();
+    }
+  },
+
+  all() {
+    this.nav();
+    this.header();
+    this.main();
+    this.footer();
+  },
+};
+
+// === INIT ===
+eventManager.init();
+render.all();
